@@ -1,35 +1,44 @@
-// A launch configuration that compiles the extension and then opens it inside a new window
-// Use IntelliSense to learn about possible attributes.
-// Hover to view descriptions of existing attributes.
-// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Run Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"preLaunchTask": "${defaultBuildTask}"
-		},
-		{
-			"name": "Extension Tests",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/test/**/*.js"
-			],
-			"preLaunchTask": "${defaultBuildTask}"
-		},
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Extension",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ],
+            "preLaunchTask": "npm: watch",
+            "request": "launch",
+            "type": "pwa-extensionHost",
+            "env": {
+                // "CUSTOM_VSCODE_EXTENSIONS_FOLDER": "" // after changing this value, if you have the previous one in the debug sesson, restart vscode.
+            },
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${workspaceFolder}/src/*",
+                "webpack:///src/*": "${workspaceFolder}/src/*"
+            }
+        },
+        {
+            "name": "Extension Tests",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/test/**/*.js"
+            ],
+            "preLaunchTask": "npm: test-compile",
+            "request": "launch",
+            "type": "pwa-extensionHost",
+            "env": {
+                // "CUSTOM_VSCODE_EXTENSIONS_FOLDER": "" // after changing this value, if you have the previous one in the debug sesson, restart vscode.
+            }
+        },
 		{
 			"name": "Jest",
 			"type": "node",
@@ -44,5 +53,5 @@
 			"internalConsoleOptions": "neverOpen",
 			"port": 9229
 		  },
-	]
+    ]
 }

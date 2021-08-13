@@ -1,12 +1,31 @@
+# folders
 .vscode/**
 .vscode-test/**
-out/**
-
-src/**
-.gitignore
-.yarnrc
-vsc-extension-quickstart.md
+src
+out
+node_modules
+test
+__mocks__
 **/tsconfig.json
+**/tslint.json
 **/.eslintrc.json
 **/*.map
 **/*.ts
+*.log
+*.vsix
+
+# Specific files
+.gitignore
+webpack.config.js
+CONTRIBUTING.md
+package-lock.json
+yarn.lock
+.editorconfig
+.prettierrc
+.yarnrc
+.mewrc.json
+
+# Special exclusions
+assets
+!assets/images/icon.png
+!assets/images/banner.png
