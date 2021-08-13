@@ -41,15 +41,26 @@ You are in charge, use them as you like!
 
 ## Extension Settings
 
-to do
+- `mew.extensions.ignoredList`: extensions's state won't be changed by this extension, these extensions won't be listed when creating or editing bundles.
+- `mew.extensions.autoLoad`: if .mewrc.json exists in the folder/workspace:\
+  - `Prompt` Ask User if he wants to load extensions from .mewrc.json when opening a folder/workspace. choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
+  - `Never` will neither load extensions when opening a folder/workspace. No prompt.\
+  - `Always` will load extensions from .mewrc.json automatically.\
+- `mew.extensions.autoInstall`: if .mewrc.json exists:\
+  - `Prompt` Ask user if he wants to install missing extensions listed in .mewrc.json when opening a folder/workspace. Choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
+  - `Never` Doesn't install missing extensions and don't ask user for it.\
+  - `Always` will always installed missing extensions from .mewrc.json after opening a folder/workspace.\
 
 ## Requirements
 
 you need nodeJS >= 14.x and VS Code >= 1.57.0
 
 ## First run
-`npm install -g yarn`\
-`yarn`\
+
+```
+npm install -g yarn
+yarn
+```
 F5 to debug (choose 'Debug Extension' if prompted)
 
 -----------------------------------------------------------------------------------------------------------
