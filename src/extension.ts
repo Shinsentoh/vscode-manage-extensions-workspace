@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import * as vscode from "vscode";
-import { ExtensionContext } from "vscode";
 import { Container } from "typedi";
 
 import "./issues/resolver";
@@ -11,7 +10,7 @@ import BundleService from "./services/bundleService";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
   console.log('vscode-manage-extensions-workspaces has been activated.');
   Container.set(Constants.contextContainerKey, context);
   const bundleService = Container.get(BundleService);

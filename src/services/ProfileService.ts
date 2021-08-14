@@ -1,5 +1,4 @@
 ﻿import * as vscode from "vscode";
-import { Disposable } from "vscode";
 import { Service } from "typedi";
 
 import * as Constants from "../constants";
@@ -8,7 +7,7 @@ import ContextService from "./contextService";
 import StorageService from "./storageService";
 
 @Service()
-class ProfileService implements Disposable {
+class ProfileService implements vscode.Disposable {
   private _statusBarItem: vscode.StatusBarItem;
 
   constructor(

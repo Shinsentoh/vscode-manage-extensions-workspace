@@ -1,5 +1,4 @@
 ﻿import * as vscode from "vscode";
-import { Disposable } from "vscode";
 import * as path from "path";
 import { readdir, existsSync as fsExistsSync } from "fs";
 import { promisify } from "util";
@@ -13,21 +12,22 @@ import ContextService from "./contextService";
 
 const fsReadDir = promisify(readdir);
 @Service()
-class StorageService implements Disposable {
+class StorageService implements vscode.Disposable {
   constructor(private _ctxService: ContextService) {
 
   }
 
   dispose() {
+    return;
   }
 
   public async store<T = any>(key: string, state: T, scope = Scope.global): Promise<boolean> {
     try {
       if (Scope.global === scope) {
-        this._ctxService.context.globalState.update(key, state);
+        await this._ctxService.context.globalState.update(key, state);
       }
       else {
-        this._ctxService.context.workspaceState.update(key, state);
+        await this._ctxService.context.workspaceState.update(key, state);
       }
     }
     catch(e) {
@@ -112,7 +112,7 @@ class StorageService implements Disposable {
       }),
     );
 
-    return extensions.sort((a, b) => a.label!.localeCompare(b.label!));
+    return extensions.sort((a, b) => a.label.localeCompare(b.label));
   }
 
   /**
@@ -169,7 +169,7 @@ class StorageService implements Disposable {
       // else get the default path
       actualPath = Utils.getDefaultVSCodeExtensionsPath();
     }
-    return actualPath!;
+    return actualPath;
   }
 }
 

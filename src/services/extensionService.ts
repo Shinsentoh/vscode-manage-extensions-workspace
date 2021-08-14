@@ -1,6 +1,5 @@
 ﻿import { Service } from "typedi";
 import * as vscode from "vscode";
-import { Disposable } from "vscode";
 
 import * as Constant from "../constants";
 import { Extension, ExtensionDetail, Scope } from "../types";
@@ -8,7 +7,7 @@ import ContextService from "./contextService";
 import StorageService from "./storageService";
 
 @Service()
-class ExtensionService implements Disposable {
+class ExtensionService implements vscode.Disposable {
   private _oldVsCodeExtensionIdList: string = '';
   private _isExtensionsCached = false;
 

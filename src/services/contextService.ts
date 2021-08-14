@@ -10,6 +10,7 @@ class ContextService implements Disposable {
   }
 
   dispose() {
+    return;
   }
 
   public extensionDirectoryName(): string {

@@ -19,7 +19,7 @@ export enum SettingsContributionKey {
 export enum Scope {
   global,
   workspace
-};
+}
 
 export type Bundle = {
   name: string,
@@ -42,6 +42,7 @@ export type Extension = {
   id: string,
   uuid: string
 };
+
 
 export type PackageJson = {
 	name: string,

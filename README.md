@@ -2,7 +2,7 @@
 
 # MEW - Workspace Extensions Manager
 
-Goal: Create Bundles of extensions to use for a project/workspace.
+Goal: Create Bundles of extensions to have only the necessary extensions enabled for a project and limit memory usage while having different VS Code instance run another set of extensions.\
 Apply one or more bundles of extensions on any project/workspace.
 
 In a few words, bundles are a set of extensions designed to load these latter on a specific project without worrying of your ESlint extension running on a different powershell project for instance.
@@ -42,14 +42,24 @@ You are in charge, use them as you like!
 ## Extension Settings
 
 - `mew.extensions.ignoredList`: extensions's state won't be changed by this extension, these extensions won't be listed when creating or editing bundles.
-- `mew.extensions.autoLoad`: if .mewrc.json exists in the folder/workspace:\
+- `mew.workspace.autoLoad`: if .mewrc.json exists in the folder/workspace:\
   - `Prompt` Ask User if he wants to load extensions from .mewrc.json when opening a folder/workspace. choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
   - `Never` will neither load extensions when opening a folder/workspace. No prompt.\
   - `Always` will load extensions from .mewrc.json automatically.\
-- `mew.extensions.autoInstall`: if .mewrc.json exists:\
+- `mew.workspace.autoInstall`: if .mewrc.json exists:\
   - `Prompt` Ask user if he wants to install missing extensions listed in .mewrc.json when opening a folder/workspace. Choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
   - `Never` Doesn't install missing extensions and don't ask user for it.\
   - `Always` will always installed missing extensions from .mewrc.json after opening a folder/workspace.\
+  - `mew.bundles.autoAdd`: When an extension is installed, automatically add it to bundles:
+    - `Never`: hide prompt and do nothing.
+    - `All active`: add the extension to all current active bundles automatically.
+    - `Choose your bundle(s)`: let user choose the bundles where the new extension will be added.
+    - `Prompt`: prompt for above choices.
+  - `mew.bundles.autoRemove`: When an extension is uninstalled, automatically remove it from bundles:
+    - `Never`: hide prompt and do nothing.
+    - `All active`: remove the extension from all current active bundles
+    - `Choose your bundle(s)`: let user choose the bundles where the new extension will be removed from.
+    - `Prompt`: prompt for above choices.
 
 ## Requirements
 

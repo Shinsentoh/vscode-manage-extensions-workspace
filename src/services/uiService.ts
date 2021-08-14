@@ -1,13 +1,11 @@
 ﻿import * as vscode from "vscode";
-import { Disposable } from "vscode";
 import { Service } from "typedi";
 import { Bundle, ChooseBundleOptions, ChooseExtensionsOptions, Extension } from "../types";
 
 @Service()
-class UIService implements Disposable {
-  constructor() {}
-
+class UIService implements vscode.Disposable {
   dispose() {
+    return;
   }
 
   /**
@@ -54,7 +52,7 @@ class UIService implements Disposable {
   public async chooseBundles(chooseBundleOptions: ChooseBundleOptions) : Promise<Bundle[] | undefined>
   {
     // create bundle list
-    const bundleSelectionList = await chooseBundleOptions.availableBundles.map(({name}) => {
+    const bundleSelectionList = chooseBundleOptions.availableBundles.map(({name}) => {
       return {
         label: name,
         picked: chooseBundleOptions.enabledBundles.some(e => e === name)

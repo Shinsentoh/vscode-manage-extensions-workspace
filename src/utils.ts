@@ -7,8 +7,7 @@ export function getParentPath(path: string | undefined) : string | undefined
 {
   if (!path) { return; }
   const lastIndex = path.lastIndexOf(platformSlash);
-  const parentPath = path.slice(0, lastIndex);
-  return parentPath;
+  return path.slice(0, lastIndex);
 }
 
 /**

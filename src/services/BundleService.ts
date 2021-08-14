@@ -1,5 +1,4 @@
 ﻿import * as vscode from "vscode";
-import { Disposable } from "vscode";
 import { Service } from "typedi";
 import { Bundle, Extension, Scope } from "../types";
 import * as Constant from "../constants";
@@ -10,12 +9,12 @@ import ProfileService from "./profileService";
 import UIService from "./uiService";
 
 @Service()
-class BundleService implements Disposable {
+class BundleService implements vscode.Disposable {
   constructor(
     private _storageService: StorageService,
     private _profileService: ProfileService,
     private _extensionService: ExtensionService,
-    private _uiService: UIService,
+    private uiService: UIService,
   ) {}
 
   dispose() {
@@ -42,7 +41,7 @@ class BundleService implements Disposable {
 
       // Generate items
       const enabledBundles = await this._profileService.getCurrentProfileBundles() ?? [];
-      const selectedBundles = await this._uiService.chooseBundles({
+      const selectedBundles = await this.uiService.chooseBundles({
         availableBundles: bundles,
         enabledBundles: enabledBundles,
         placeHolder: "The selected bundles will be used for this workspace",
@@ -50,7 +49,7 @@ class BundleService implements Disposable {
         canPickMany: true
       });
       // if user escaped the prompt or clicked elsewhere, do nothing.
-      if (!selectedBundles) return;
+      if (!selectedBundles) { return; }
 
       // prompt a warning if no bundle is in use and none were selected (confirmed with enter or ok).
       if (selectedBundles.length <= 0 && enabledBundles.length <= 0) {
@@ -98,13 +97,13 @@ class BundleService implements Disposable {
     const bundles = await this.getBundles() ?? [];
 
     // choose a bundle name
-    const bundleName = await this._uiService.getBundleName(bundles);
+    const bundleName = await this.uiService.getBundleName(bundles);
     if (!bundleName) { return; }
 
     // choose the extensions to include.
     const enabledExtensions = await this._extensionService.getEnabledExtensions();
     const availableExtensions = await this._extensionService.getAvailableExtensions();
-    const selectedExtensions = await this._uiService.chooseExtensions({
+    const selectedExtensions = await this.uiService.chooseExtensions({
       availableExtensions: availableExtensions,
       enabledExtensions: enabledExtensions,
       placeHolder: "Filter extensions",
@@ -129,7 +128,7 @@ class BundleService implements Disposable {
     }
 
     // Generate items
-    let selectedBundle = await this._uiService.chooseBundles({
+    let selectedBundle = await this.uiService.chooseBundles({
       availableBundles: bundles,
       enabledBundles: [],
       placeHolder: "Search bundles",
@@ -173,7 +172,7 @@ class BundleService implements Disposable {
 
     // Generate items
     const enabledBundles = await this._profileService.getCurrentProfileBundles() ?? [];
-    let [selectedBundle] = await this._uiService.chooseBundles({
+    let [selectedBundle] = await this.uiService.chooseBundles({
       availableBundles: bundles,
       enabledBundles: enabledBundles,
       placeHolder: "Filter bundles",
@@ -186,7 +185,7 @@ class BundleService implements Disposable {
 
     // choose the extensions to include.
     const availableExtensions = await this._extensionService.getAvailableExtensions();
-    const selectedExtensions = await this._uiService.chooseExtensions({
+    const selectedExtensions = await this.uiService.chooseExtensions({
       availableExtensions: availableExtensions,
       enabledExtensions: selectedBundle.extensions,
       placeHolder: "Filter extensions",
@@ -238,6 +237,10 @@ class BundleService implements Disposable {
   public async exists(bundleName: string): Promise<boolean> {
     const bundles = await this.getBundles();
     return bundles?.some(i => i.name === bundleName) ?? false;
+  }
+
+  public truc ({name}: Bundle) {
+    console.log(name);
   }
 }
 
