@@ -1,26 +1,36 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import "reflect-metadata";
+import * as vscode from "vscode";
+import { Container } from "typedi";
+
+import "./issues/resolver";
+import { CommandType } from "./types";
+import * as Constants from "./constants";
+import ProfileService from "./services/profileService";
+import BundleService from "./services/bundleService";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-manage-extensions-workspaces" is now active!');
+  console.log('vscode-manage-extensions-workspaces has been activated.');
+  Container.set(Constants.contextContainerKey, context);
+  const bundleService = Container.get(BundleService);
+  const profileService = Container.get(ProfileService);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-manage-extensions-workspaces.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from MEW!');
-	});
+  // Registration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand(CommandType.createBundle, async () => { bundleService.createBundle(); }),
+    vscode.commands.registerCommand(CommandType.selectProfile, async () => { bundleService.selectBundles(); }),
+    vscode.commands.registerCommand(CommandType.editBundle, async () => { bundleService.editBundle(); }),
+    vscode.commands.registerCommand(CommandType.deleteBundle, async () => { bundleService.deleteBundle(); }),
+    // vscode.commands.registerCommand(CommandType.disableExtension, DisableExtension),
+    // vscode.commands.registerCommand(CommandType.enableExtension, EnableExtension)
+  );
 
-	context.subscriptions.push(disposable);
+  profileService.updateStatusBar();
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	console.log('vscode-manage-extensions-workspaces is disabled.');
+  Container.reset();
+}

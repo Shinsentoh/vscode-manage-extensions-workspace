@@ -1,71 +1,175 @@
 {
-	"name": "vscode-manage-extensions-workspaces",
-	"displayName": "MEW - Manage your Extensions by Workspace",
-	"description": "Create your vscode extensions bundles, then select one or many to be used in a workspace.",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.40.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"vscode-settings",
-		"code-settings",
-		"profile",
-		"extensions",
-		"extension",
-		"manager",
-		"workspace"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Shinsentoh/vscode-manage-extensions-workspace"
-	},
-	"author": {
-		"name": "Shinsentoh",
-		"url": "https://github.com/Shinsentoh"
-	},
-	"publisher": "Shinsentoh",
-	"activationEvents": [
-		"onCommand:vscode-manage-extensions-workspaces.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "vscode-manage-extensions-workspaces.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"version": "auto-changelog -p && git add CHANGELOG.md",
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "jest",
-		"ui-test": "node ./test/test-runner"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/jest": "^26.0.24",
-		"@types/jest-cli": "^24.3.0",
-		"@types/node": "14.x",
-		"@types/vscode": "^1.58.0",
-		"@typescript-eslint/eslint-plugin": "^4.26.0",
-		"@typescript-eslint/parser": "^4.26.0",
-		"auto-changelog": "^2.3.0",
-		"eslint": "^7.27.0",
-		"glob": "^7.1.7",
-		"jest": "^27.0.6",
-		"jest-cli": "^27.0.6",
-		"ts-jest": "^27.0.4",
-		"ts-node": "^10.1.0",
-		"typescript": "^4.3.2",
-		"vscode-test": "^1.5.2"
-	},
-	"dependencies": {}
+  "name": "vscode-manage-extensions-workspaces",
+  "displayName": "MEW - Workspace Extensions Manager",
+  "description": "Create as many bundle as you want for your extensions, then select one or many to enable all those extensions for a project or a workspace.",
+  "version": "0.0.1",
+  "preview": true,
+  "icon": "assets/images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shinsentoh/vscode-manage-extensions-workspace"
+  },
+  "bug": {
+    "url": "https://github.com/Shinsentoh/vscode-manage-extensions-workspace/issues"
+  },
+  "author": {
+    "name": "Shinsentoh",
+    "url": "https://github.com/Shinsentoh"
+  },
+  "publisher": "Shinsentoh",
+  "license": "SEE LICENSE IN LICENSE",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "profile",
+    "extension",
+    "manager",
+    "workspace",
+    "bundles"
+  ],
+  "extensionKind": ["ui"],
+  "activationEvents": [
+    "onCommand:mew.extension.Disable",
+    "onCommand:mew.extension.Enable",
+    "onCommand:mew.bundle.Select",
+    "onCommand:mew.bundle.Create",
+    "onCommand:mew.bundle.Edit",
+    "onCommand:mew.bundle.Delete",
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": ""
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "mew.bundle.Select",
+        "title": "Select bundles",
+        "category": "MEW",
+        "shortTitle": "Select bundles"
+      },
+      {
+        "command": "mew.bundle.Create",
+        "title": "Create bundle",
+        "category": "MEW",
+        "shortTitle": "Create bundle"
+      },
+      {
+        "command": "mew.bundle.Edit",
+        "title": "Edit bundle",
+        "category": "MEW",
+        "shortTitle": "Edit bundle"
+      },
+      {
+        "command": "mew.bundle.Delete",
+        "title": "Delete bundle",
+        "category": "MEW",
+        "shortTitle": "Delete bundle"
+      },
+      {
+        "command": "mew.extension.Disable",
+        "title": "Disable (bundle)",
+        "category": "MEW",
+        "shortTitle": "Disable (bundle)"
+      },
+      {
+        "command": "mew.extension.Enable",
+        "title": "Enable (bundle)",
+        "category": "MEW",
+        "shortTitle": "Enable (bundle)"
+      }
+    ],
+    "menus": {
+      "extension/context": [
+        {
+          "when": "extensionStatus == installed && workbenchState != empty",
+          "command": "mew.extension.Enable",
+          "group": "navigation"
+        },
+        {
+          "when": "extensionStatus == installed && workbenchState != empty",
+          "command": "mew.extension.Disable",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "when": "false",
+          "command": "mew.extension.Enable"
+        },
+        {
+          "when": "false",
+          "command": "mew.extension.Disable"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MEW",
+      "properties": {
+        "mew.ignoredExtensions": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-\\.]+\\.[a-z0-9-\\.]+[a-z]+$",
+            "patternErrorMessage": "must follow the pattern `publisher.extension-name`. You can right-click on the extension in the Extension panel and select 'copy Extension Id'."
+          },
+          "scope": "application",
+          "markdownDescription": "You won't be able to pick them for a bundle, their state won't be changed. Also 'enable (workspace)' or 'disable (workspace)' from extension view panel won't persist after selecting bundles.",
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "scripts": {
+    "version": "auto-changelog -p && git add CHANGELOG.md",
+    "vscode:prepublish": "webpack --mode production",
+    "prod": "webpack --mode production",
+    "compile": "webpack --mode production && yarn test-compile",
+    "watch": "webpack --mode development && tsc -watch -p ./",
+    "dev": "webpack --mode development",
+    "test-compile": "tsc -p ./",
+    "pretest": "yarn test-compile && yarn lint",
+    "lint": "eslint src --ext ts",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "16.x",
+    "@types/node-fetch": "^2.5.12",
+    "@types/sqlite3": "^3.1.7",
+    "@types/tar": "^4.0.5",
+    "@types/vscode": "^1.57.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "auto-changelog": "^2.3.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "eslint": "^7.27.0",
+    "jest": "^27.0.6",
+    "jest-cli": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "ts-loader": "^9.2.5",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5",
+    "vscode-nls-i18n": "^0.2.4",
+    "vscode-test": "^1.6.1",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "https://github.com/mapbox/node-sqlite3.git#3fb3715c4e699ca3bc19e47b136758c66f61e477",
+    "tar": "^6.1.2",
+    "typedi": "^0.10.0"
+  },
+  "engines": {
+    "vscode": "^1.57.0"
+  }
 }
