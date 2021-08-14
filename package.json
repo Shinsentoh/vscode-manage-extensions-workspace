@@ -2,7 +2,7 @@
   "name": "vscode-manage-extensions-workspaces",
   "displayName": "MEW - Workspace Extensions Manager",
   "description": "Create as many bundle as you want for your extensions, then select one or many to enable all those extensions for a project or a workspace.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "preview": true,
   "icon": "assets/images/icon.png",
   "repository": {
@@ -28,7 +28,9 @@
     "workspace",
     "bundles"
   ],
-  "extensionKind": ["ui"],
+  "extensionKind": [
+    "ui"
+  ],
   "activationEvents": [
     "onCommand:mew.extension.Disable",
     "onCommand:mew.extension.Enable",
