@@ -9,18 +9,23 @@
 		],
 		"sourceMap": true,
 		"rootDir": "src",
-		"strict": true,   /* enable all strict type-checking options */
 		"skipLibCheck": true,
+		"moduleResolution": "node",
+		/* enable all strict type-checking options */
+		"strict": true,
 		/* for typeDI and reflect-metadata */
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node"
+		/* webpack.ts specific options, see https://webpack.js.org/configuration/configuration-languages/ */
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
 		"test",
 		"node_modules",
 		".vscode-test",
 		"jest.config.ts",
+		"webpack.config.ts",
 		"out"
 	]
 }

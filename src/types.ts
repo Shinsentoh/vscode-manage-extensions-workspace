@@ -1,20 +1,7 @@
-export enum CommandType {
-  selectProfile = "mew.bundle.Select",
-  createBundle = "mew.bundle.Create",
-  editBundle = "mew.bundle.Edit",
-  deleteBundle = "mew.bundle.Delete",
-  disableExtension = "mew.extension.Disable",
-  enableExtension = "mew.extension.Enable"
-}
-
-export enum SettingsContributionKey {
-  selectProfile = "mew.bundle.Select",
-  createBundle = "mew.bundle.Create",
-  editBundle = "mew.bundle.Edit",
-  deleteBundle = "mew.bundle.Delete",
-  disableExtension = "mew.extension.Disable",
-  enableExtension = "mew.extension.Enable"
-}
+export type ContributionReplaceToken = {
+  name: string,
+  type: any
+};
 
 export enum Scope {
   global,

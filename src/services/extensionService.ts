@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import * as Constant from "../constants";
 import { Extension, ExtensionDetail, Scope } from "../types";
 import ContextService from "./contextService";
+import SettingService from "./settingService";
 import StorageService from "./storageService";
 
 @Service()
@@ -13,31 +14,54 @@ class ExtensionService implements vscode.Disposable {
 
   constructor(
     private _ctxService: ContextService,
-    private _storageService: StorageService
+    private _storageService: StorageService,
+    private _settingsService: SettingService
   ) {
     this.initialize();
   }
 
   /**
-   * preload the cache for installed extensions.
+   * preload the cache for available extensions.
    * @returns a list of {@link ExtensionDetail} or undefined
    */
   public async preLoadExtensionsCache() {
-    this.setInstalledExtensionsCache();
+    this.setAvailableExtensionsCache();
   }
 
   /**
-   * return the cached installed extensions. if cache doesn't exist, populate it by parsing the extensions folder content.
+   * return the cached availalbe extensions. if cache doesn't exist, populate it by parsing the extensions folder content.
    * @returns a list of {@link ExtensionDetail} or undefined
    */
-  private async setInstalledExtensionsCache() {
+  private async setAvailableExtensionsCache() {
     if (!this._isExtensionsCached) {
       const installedExtensions = await this._storageService.getInstalledExtensions();
+      const ignoredExtensions = this.getIgnoredExtensions();
+      const availableExtensions: ExtensionDetail[] = installedExtensions.filter(i => !ignoredExtensions.includes(i.id));
       this._isExtensionsCached = true;
       // store datas async
-      this._storageService.store(Constant.appInstalledExtensionsKey, installedExtensions, Scope.global);
+      this._storageService.store(Constant.appInstalledExtensionsKey, availableExtensions, Scope.global);
       return installedExtensions;
     }
+  }
+
+  /**
+   * Get ignored extensions defined by user, the vscode-remote one and this one (mew).
+   * @returns list of Extension Id to ignore
+   */
+  private getIgnoredExtensions(): string[] {
+    // ignore this extension and the vscode remote one as, user could
+    // wrongly pick the remote ones and block himself while opening a remote folder.
+    const ignoredList = [
+      "shinsentoh.vscode-manage-extensions-workspaces",
+      "ms-vscode-remote.remote-ssh",
+      "ms-vscode-remote.remote-ssh-edit",
+      "ms-vscode-remote.remote-wsl",
+      "ms-vscode-remote.remote-container"
+    ];
+
+    const userIgnoredExtensions = this._settingsService.getUserIgnoredExtensions();
+
+    return [...ignoredList, ...userIgnoredExtensions];
   }
 
   /**
@@ -71,13 +95,13 @@ class ExtensionService implements vscode.Disposable {
   }
 
   /**
-   * Get all installed extensions available for this VS Code instance even disabled ones.
+   * Get all avalaible extensions available for this VS Code instance even disabled ones.
    * Use a cache. this cache will be invalidate if an extension is installed or uninstalled from VS Code.
    * @returns list of {@link ExtensionDetail}
    */
   public async getAvailableExtensions(): Promise<ExtensionDetail[]> {
     // creates cache if not set
-    await this.setInstalledExtensionsCache();
+    await this.setAvailableExtensionsCache();
 
     const cachedExtensions = await this._storageService.getState<ExtensionDetail[]>(Constant.appInstalledExtensionsKey, Scope.global);
     return cachedExtensions ?? [];

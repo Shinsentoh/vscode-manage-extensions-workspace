@@ -2,9 +2,10 @@
 import { Service } from "typedi";
 
 import * as Constants from "../constants";
-import { CommandType, Scope } from "../types";
+import { Scope } from "../types";
 import ContextService from "./contextService";
 import StorageService from "./storageService";
+import { CommandsContribKey } from "../constants";
 
 @Service()
 class ProfileService implements vscode.Disposable {
@@ -17,7 +18,7 @@ class ProfileService implements vscode.Disposable {
     this._statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Left
     );
-    this._statusBarItem.command = CommandType.selectProfile;
+    this._statusBarItem.command = CommandsContribKey.selectProfile;
     this._ctxService.context.subscriptions.push(this._statusBarItem);
   }
 

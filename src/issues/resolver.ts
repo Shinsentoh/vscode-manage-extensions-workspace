@@ -41,14 +41,14 @@ async function loadSqlite3Bindings() {
       )
       .then((res) => {
         if (uninstall === res) {
-          UninstallThisExtension();
+          uninstallThisExtension();
         }
       });
     }
   }
 }
 
-function UninstallThisExtension() {
+function uninstallThisExtension() {
   const packagePath = path.resolve(path.join(__dirname, "../package.json"));
   const packageJSON = loadJSON(packagePath);
   const packageName = utils.getExtensionNameFromPackageObject(packageJSON);
