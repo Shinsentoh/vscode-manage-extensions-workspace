@@ -2,6 +2,7 @@
   "name": "vscode-manage-extensions-workspaces",
   "displayName": "MEW - Workspace Extensions Manager",
   "description": "Create as many bundle as you want for your extensions, then select one or many to enable all those extensions for a project or a workspace.",
+  "publisher": "shinsentoh",
   "version": "0.1.0",
   "preview": true,
   "icon": "assets/images/icon.png",
@@ -16,7 +17,6 @@
     "name": "Shinsentoh",
     "url": "https://github.com/Shinsentoh"
   },
-  "publisher": "Shinsentoh",
   "license": "SEE LICENSE IN LICENSE",
   "categories": [
     "Other"
@@ -32,12 +32,12 @@
     "ui"
   ],
   "activationEvents": [
-    "onCommand:mew.extension.Disable",
-    "onCommand:mew.extension.Enable",
-    "onCommand:mew.bundle.Select",
-    "onCommand:mew.bundle.Create",
-    "onCommand:mew.bundle.Edit",
-    "onCommand:mew.bundle.Delete",
+    "onCommand:mew.bundle.create",
+    "onCommand:mew.extension.enable",
+    "onCommand:mew.extension.select",
+    "onCommand:mew.bundle.create",
+    "onCommand:mew.bundle.edit",
+    "onCommand:mew.bundle.delete",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
@@ -50,37 +50,37 @@
   "contributes": {
     "commands": [
       {
-        "command": "mew.bundle.Select",
+        "command": "mew.extension.select",
         "title": "Select bundles",
         "category": "MEW",
         "shortTitle": "Select bundles"
       },
       {
-        "command": "mew.bundle.Create",
+        "command": "mew.bundle.create",
         "title": "Create bundle",
         "category": "MEW",
         "shortTitle": "Create bundle"
       },
       {
-        "command": "mew.bundle.Edit",
+        "command": "mew.bundle.edit",
         "title": "Edit bundle",
         "category": "MEW",
         "shortTitle": "Edit bundle"
       },
       {
-        "command": "mew.bundle.Delete",
+        "command": "mew.bundle.delete",
         "title": "Delete bundle",
         "category": "MEW",
         "shortTitle": "Delete bundle"
       },
       {
-        "command": "mew.extension.Disable",
+        "command": "mew.extension.disable",
         "title": "Disable (bundle)",
         "category": "MEW",
         "shortTitle": "Disable (bundle)"
       },
       {
-        "command": "mew.extension.Enable",
+        "command": "mew.extension.enable",
         "title": "Enable (bundle)",
         "category": "MEW",
         "shortTitle": "Enable (bundle)"
@@ -90,36 +90,36 @@
       "extension/context": [
         {
           "when": "extensionStatus == installed && workbenchState != empty",
-          "command": "mew.extension.Enable",
+          "command": "mew.extension.enable",
           "group": "navigation"
         },
         {
           "when": "extensionStatus == installed && workbenchState != empty",
-          "command": "mew.extension.Disable",
+          "command": "mew.extension.disable",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
           "when": "false",
-          "command": "mew.extension.Enable"
+          "command": "mew.extension.enable"
         },
         {
           "when": "false",
-          "command": "mew.extension.Disable"
+          "command": "mew.extension.disable"
         }
       ]
     },
     "configuration": {
       "title": "MEW",
       "properties": {
-        "mew.ignoredExtensions": {
+        "mew.extensions.ignoredList": {
           "type": "array",
           "default": [],
           "items": {
             "type": "string",
-            "pattern": "^[a-z0-9-\\.]+\\.[a-z0-9-\\.]+[a-z]+$",
-            "patternErrorMessage": "must follow the pattern `publisher.extension-name`. You can right-click on the extension in the Extension panel and select 'copy Extension Id'."
+            "pattern": "^[a-z0-9-]+\\.[a-z0-9-]+[a-z]+$",
+            "patternErrorMessage": "must follow the pattern `publisher.extension-name`. To find it you can right-click on the extension in the Extension panel and select 'Copy Extension Id'."
           },
           "scope": "application",
           "markdownDescription": "You won't be able to pick them for a bundle, their state won't be changed. Also 'enable (workspace)' or 'disable (workspace)' from extension view panel won't persist after selecting bundles.",
@@ -131,7 +131,7 @@
   },
   "scripts": {
     "version": "auto-changelog -p && git add CHANGELOG.md",
-    "vscode:prepublish": "webpack --mode production",
+    "vscode:prepublish": "webpack --mode production && cat package.json",
     "prod": "webpack --mode production",
     "compile": "webpack --mode production && yarn test-compile",
     "watch": "webpack --mode development && tsc -watch -p ./",
@@ -148,6 +148,7 @@
     "@types/sqlite3": "^3.1.7",
     "@types/tar": "^4.0.5",
     "@types/vscode": "^1.57.0",
+    "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "auto-changelog": "^2.3.0",
@@ -162,7 +163,8 @@
     "vscode-nls-i18n": "^0.2.4",
     "vscode-test": "^1.6.1",
     "webpack": "^5.50.0",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-plugin-replace": "^1.2.0"
   },
   "dependencies": {
     "node-fetch": "^2.6.1",

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { Container } from "typedi";
 
 import "./issues/resolver";
-import { CommandType } from "./types";
+import { CommandsContribKey } from "./constants";
 import * as Constants from "./constants";
 import ProfileService from "./services/profileService";
 import BundleService from "./services/bundleService";
@@ -18,10 +18,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Registration commands
   context.subscriptions.push(
-    vscode.commands.registerCommand(CommandType.createBundle, async () => { bundleService.createBundle(); }),
-    vscode.commands.registerCommand(CommandType.selectProfile, async () => { bundleService.selectBundles(); }),
-    vscode.commands.registerCommand(CommandType.editBundle, async () => { bundleService.editBundle(); }),
-    vscode.commands.registerCommand(CommandType.deleteBundle, async () => { bundleService.deleteBundle(); }),
+    vscode.commands.registerCommand(CommandsContribKey.createBundle, async () => { bundleService.createBundle(); }),
+    vscode.commands.registerCommand(CommandsContribKey.selectProfile, async () => { bundleService.selectBundles(); }),
+    vscode.commands.registerCommand(CommandsContribKey.editBundle, async () => { bundleService.editBundle(); }),
+    vscode.commands.registerCommand(CommandsContribKey.deleteBundle, async () => { bundleService.deleteBundle(); }),
     // vscode.commands.registerCommand(CommandType.disableExtension, DisableExtension),
     // vscode.commands.registerCommand(CommandType.enableExtension, EnableExtension)
   );

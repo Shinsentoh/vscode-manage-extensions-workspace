@@ -73,7 +73,7 @@ class BundleService implements vscode.Disposable {
 
     // merge and deduplicate bundles extensions into an array of extension
     const enabledExtensions = Utils.uniqueArray(enabledBundles.flatMap(i => i.extensions));
-    // all available extensions excluding the enabled ones.
+    // all available extensions except the enabled ones.
     const disabledExtensions = availableExtensions.filter(i => enabledBundles.length > 0 && enabledExtensions.findIndex(s => s.id === i.id) === -1);
 
     this._storageService.enableWorkspaceExtensions(enabledExtensions);

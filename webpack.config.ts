@@ -1,4 +1,5 @@
-﻿/*---------------------------------------------------------------------------------------------
+﻿/* eslint-disable @typescript-eslint/naming-convention */
+/*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -7,16 +8,32 @@
 
 'use strict';
 
-const path = require('path');
-const fs = require('fs');
-const copyPlugin = require("copy-webpack-plugin");
+import * as path from 'path';
+import * as webpack from 'webpack';
+import CopyPlugin from 'copy-webpack-plugin';
+// import ReplacePlugin from 'webpack-plugin-replace';
+// import { CommandsContribKey, SettingsContribKey } from './src/constants';
 
-function copypluginPathNameFilter(filterList, resourcePath) {
+function copypluginPathNameFilter(filterList: string[], resourcePath: string) {
   return filterList.some(value => resourcePath.toLowerCase().indexOf(value.toLowerCase()) > -1);
 }
 
-/**@type {import('webpack').Configuration}*/
-const config = {
+// function replaceTokenAsObject (...objects: any[]): { [key: string]: string; } {
+//   const properties = [];
+
+//   objects.forEach((obj) => {
+//     Reflect.ownKeys(obj).forEach(name => {
+//       const prefix = Reflect.getOwnPropertyDescriptor(obj, "name").value;
+//       if (Reflect.getOwnPropertyDescriptor(obj, name).writable === true) {
+//         properties.push([ `__${prefix}.${name}__`, obj[name] ]);
+//       }
+//     });
+//   });
+
+//   return Object.fromEntries(properties);
+// };
+
+const config: webpack.Configuration = {
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -59,12 +76,12 @@ const config = {
       warnings: true
   },
   plugins: [
-    new copyPlugin({
+    new CopyPlugin({
       patterns: [
         {
           from: "node_modules/sqlite3",
           to: "node_modules/sqlite3",
-          filter: async (resourcePath) => {
+          filter: async (resourcePath: string) => {
             return copypluginPathNameFilter([ 'lib/', 'package.json' ], resourcePath);
           },
           globOptions: {
@@ -77,7 +94,19 @@ const config = {
         }
       ],
     }),
+    // // will allow us to replace package.json's contribution identifiers with our constants, types, variables declared in code.
+    // // goal is to have those identifiers as type/constants, change there and it will automatically be changed in the package.json
+    // // could take care of specific deployment variable in the future.
+    // new ReplacePlugin({
+    //   include: [
+    //     'package.json'
+    //   ],
+    //   values: replaceTokenAsObject(
+    //     CommandsContribKey,
+    //     SettingsContribKey
+    //   )
+    // })
   ]
 };
 
-module.exports = config;
+export default config;

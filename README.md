@@ -50,12 +50,12 @@ You are in charge, use them as you like!
   - `Prompt` Ask user if he wants to install missing extensions listed in .mewrc.json when opening a folder/workspace. Choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
   - `Never` Doesn't install missing extensions and don't ask user for it.\
   - `Always` will always installed missing extensions from .mewrc.json after opening a folder/workspace.\
-  - `mew.bundles.autoAdd`: When an extension is installed, automatically add it to bundles:
+  - `mew.extensions.autoAdd`: When an extension is installed, automatically add it to bundles:
     - `Never`: hide prompt and do nothing.
     - `All active`: add the extension to all current active bundles automatically.
     - `Choose your bundle(s)`: let user choose the bundles where the new extension will be added.
     - `Prompt`: prompt for above choices.
-  - `mew.bundles.autoRemove`: When an extension is uninstalled, automatically remove it from bundles:
+  - `mew.extensions.autoRemove`: When an extension is uninstalled, automatically remove it from bundles:
     - `Never`: hide prompt and do nothing.
     - `All active`: remove the extension from all current active bundles
     - `Choose your bundle(s)`: let user choose the bundles where the new extension will be removed from.
