@@ -131,7 +131,7 @@
   },
   "scripts": {
     "version": "auto-changelog -p && git add CHANGELOG.md",
-    "vscode:prepublish": "webpack --mode production && cat package.json",
+    "vscode:prepublish": "webpack --mode production",
     "prod": "webpack --mode production",
     "compile": "webpack --mode production && yarn test-compile",
     "watch": "webpack --mode development && tsc -watch -p ./",
