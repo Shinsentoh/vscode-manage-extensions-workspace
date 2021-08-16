@@ -36,7 +36,7 @@ class ExtensionService implements vscode.Disposable {
     if (!this._isExtensionsCached) {
       const installedExtensions = await this._storageService.getInstalledExtensions();
       const ignoredExtensions = this.getIgnoredExtensions();
-      const availableExtensions: ExtensionDetail[] = installedExtensions.filter(i => !ignoredExtensions.includes(i.id));
+      const availableExtensions = installedExtensions.filter(i => !ignoredExtensions.includes(i.id));
       this._isExtensionsCached = true;
       // store datas async
       this._storageService.store(Constant.appInstalledExtensionsKey, availableExtensions, Scope.global);
@@ -51,13 +51,7 @@ class ExtensionService implements vscode.Disposable {
   private getIgnoredExtensions(): string[] {
     // ignore this extension and the vscode remote one as, user could
     // wrongly pick the remote ones and block himself while opening a remote folder.
-    const ignoredList = [
-      "shinsentoh.vscode-manage-extensions-workspaces",
-      "ms-vscode-remote.remote-ssh",
-      "ms-vscode-remote.remote-ssh-edit",
-      "ms-vscode-remote.remote-wsl",
-      "ms-vscode-remote.remote-container"
-    ];
+    const ignoredList = [ "shinsentoh.vscode-manage-extensions-workspaces" ];
 
     const userIgnoredExtensions = this._settingsService.getUserIgnoredExtensions();
 
@@ -71,7 +65,9 @@ class ExtensionService implements vscode.Disposable {
     this._oldVsCodeExtensionIdList = vscode.extensions.all.map(i => i.id).sort().join(',');
     // invalidate cache when extensions are installed or uninstalled from VS Code
     this._ctxService.context.subscriptions.push(
-      vscode.extensions.onDidChange(_ => this.handleExtensionsListChanged)
+      vscode.extensions.onDidChange(_ => this.handleExtensionsViewListChanged),
+      // invalidate extensions cache when mew settings are changed.
+      this._settingsService.onDidChangeIgnoredExtensions(_ => this._isExtensionsCached = false)
     );
   }
 
@@ -84,7 +80,7 @@ class ExtensionService implements vscode.Disposable {
   // idea for future use =>
   // 1: ask if user wants to add the new extension to the active bundles he uses.
   // 2: ask if user wants to remove the missing extensions from the active bundles that were using them.
-  private handleExtensionsListChanged() {
+  private handleExtensionsViewListChanged() {
     const extensionsIdList = vscode.extensions.all.map(i => i.id).sort().join(',');
     // if extensions number changed since last time
     if (extensionsIdList !== this._oldVsCodeExtensionIdList) {

@@ -18,6 +18,7 @@ class BundleService implements vscode.Disposable {
   ) {}
 
   dispose() {
+    return;
   }
 
   /**
@@ -72,7 +73,7 @@ class BundleService implements vscode.Disposable {
     }
 
     // merge and deduplicate bundles extensions into an array of extension
-    const enabledExtensions = Utils.uniqueArray(enabledBundles.flatMap(i => i.extensions));
+    const enabledExtensions = Utils.uniqueArray(...enabledBundles.flatMap(i => i.extensions));
     // all available extensions except the enabled ones.
     const disabledExtensions = availableExtensions.filter(i => enabledBundles.length > 0 && enabledExtensions.findIndex(s => s.id === i.id) === -1);
 
@@ -108,7 +109,7 @@ class BundleService implements vscode.Disposable {
       enabledExtensions: enabledExtensions,
       placeHolder: "Filter extensions",
       title: `Select extensions for bundle "${bundleName}"`
-    });
+    }) ?? [];
 
     await this.saveBundle(bundleName, selectedExtensions, bundles);
 
@@ -190,13 +191,16 @@ class BundleService implements vscode.Disposable {
       enabledExtensions: selectedBundle.extensions,
       placeHolder: "Filter extensions",
       title: `Select extensions for bundle "${selectedBundle.name}"`
-    });
+    }) ?? [];
+    // handle the case when we specify an extension ignoreList on the workspace level and an active bundle is edited.
+    // we take the exising bundle and add the extensions that are not present in this workspace.
+    const uniqueExtensions = Utils.uniqueArray<Extension>(...selectedBundle.extensions, ...selectedExtensions);
 
-    await this.saveBundle(selectedBundle.name, selectedExtensions, bundles);
+    await this.saveBundle(selectedBundle.name, uniqueExtensions, bundles);
   }
 
-  private async saveBundle(bundleName: string, selectedExtensions?: Extension[], bundles?: Bundle[]) : Promise<boolean> {
-    if (selectedExtensions) {
+  private async saveBundle(bundleName: string, selectedExtensions: Extension[], bundles?: Bundle[]) : Promise<boolean> {
+    if (selectedExtensions.length > 0) {
       if (!bundles) {
         bundles = await this.getBundles() ?? [];
       }
@@ -211,7 +215,7 @@ class BundleService implements vscode.Disposable {
       }
 
       // saving bundles
-      return await this.saveBundles(bundles);
+      return this.saveBundles(bundles);
     }
 
     return false;

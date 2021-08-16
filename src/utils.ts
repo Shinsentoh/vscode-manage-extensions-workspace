@@ -37,7 +37,7 @@ export function loadJSON<T>(path: string) {
   return JSON.parse(readFileSync(path) as any) as T;
 }
 
-export function uniqueArray<T>(arrays: T[]) {
+export function uniqueArray<T>(...arrays: T[]) {
   return [...new Set([...arrays.map(o => JSON.stringify(o))])].map<T>(e => JSON.parse(e));
 }
 

@@ -1,8 +1,3 @@
-export type ContributionReplaceToken = {
-  name: string,
-  type: any
-};
-
 export enum Scope {
   global,
   workspace
@@ -29,7 +24,6 @@ export type Extension = {
   id: string,
   uuid: string
 };
-
 
 export type PackageJson = {
 	name: string,
@@ -68,3 +62,16 @@ export type EditBundleOptions = {
   placeHolder: string,
   title: string
 };
+
+export enum AutoTask {
+  prompt = "Ask you",
+  never = "Keep calm & sleep",
+  always = "Always do it"
+}
+
+export enum AutoTaskExtensions {
+  prompt = "Ask you",
+  never = "Keep calm & sleep",
+  all = "Auto-edit all active",
+  choose = "Let you select bundle(s)"
+}
