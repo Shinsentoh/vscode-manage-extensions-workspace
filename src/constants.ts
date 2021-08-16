@@ -17,12 +17,13 @@ export class CommandsContribKey {
   public static readonly deleteBundle = "mew.bundle.delete";
   public static readonly disableExtension = "mew.extension.disable";
   public static readonly enableExtension = "mew.extension.enable";
-};
+}
 
 export class SettingsContribKey {
-  public static readonly ignoredList = "mew.extensions.ignoredList";
+  public static readonly ignoredList = "mew.ignoredListExtensions";
+  public static readonly ignoredRemote = "mew.ignoreRemoteExtensions";
   public static readonly autoLoad = "mew.workspace.autoLoad";
   public static readonly autoInstall = "mew.workspace.autoInstall";
-  public static readonly autoAdd = "mew.extension.autoAdd";
-  public static readonly autoRemove = "mew.extension.autoRemove";
-};
+  public static readonly autoAdd = "mew.extensions.autoAdd";
+  public static readonly autoRemove = "mew.extensions.autoRemove";
+}

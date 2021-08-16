@@ -22,17 +22,14 @@ You are in charge, use them as you like!
 - :white_check_mark: While in the Add/remove extensions list, handle extension that uses i18n in their package.json (ie: %extension.displayName.title% becomes 'whatever value was set for this language or fallback to english in the package.nsl.[lang].json')
 - :white_check_mark: add a statusBar with the selected bundle name loaded or 'bundles ...' for many bundles or 'none' if no bundle is selected. Clicking it let you choose bundles to use for this project/workspace.
 - :white_check_mark: when creating a bundle, precheck the currently active extensions in VS Code.
-- :bulb: have an optional project file settings like a .mew file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install and load them (add a 'never ask me again'  option per project ?). Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
-- :bulb: add a setting 'tbd' set to true, in order to install (if necessary) and load the extensions specified in the .mew file automatically when opening the project/workspace.
-- :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use (add a setting to prevent prompt or automatically add it without asking)
+- :bulb: have an optional project file settings like a .mew file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install and load them. Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
+- :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use
 - :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (add a setting to prevent prompt or automatically remove it without asking)
 - :bulb: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
 - :bulb: investigate if all vscode windows that share the same active bundle, could be reloaded if this bundle was edited. (based on a setting)
 - :bulb: determine what to do when an extension state changes from the extension viewpanel
 - :bulb: add settings to specify :
     - should we reload window when active bundle is edited ? all windows that shares the same active bundle ?
-    - auto install and load extensions from .mewrc.json (never, prompt, load only, install only, always)
-    - extensions ignored list
 - :bulb: add localization on package. (very last priority)
 - :white_check_mark: add webpack to bundle vsix package.
 - :white_check_mark: Download automatically the right sqlite3 driver for your platform at first run, if it doesn't exists, notify user, he won't be able to use this extension at all.
@@ -41,25 +38,35 @@ You are in charge, use them as you like!
 
 ## Extension Settings
 
-- `mew.extensions.ignoredList`: extensions's state won't be changed by this extension, these extensions won't be listed when creating or editing bundles.
-- `mew.workspace.autoLoad`: if .mewrc.json exists in the folder/workspace:\
-  - `Prompt` Ask User if he wants to load extensions from .mewrc.json when opening a folder/workspace. choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
-  - `Never` will neither load extensions when opening a folder/workspace. No prompt.\
-  - `Always` will load extensions from .mewrc.json automatically.\
-- `mew.workspace.autoInstall`: if .mewrc.json exists:\
-  - `Prompt` Ask user if he wants to install missing extensions listed in .mewrc.json when opening a folder/workspace. Choosing 'Don't ask me again' will change this setting to `Never` for this folder/workspace.\
-  - `Never` Doesn't install missing extensions and don't ask user for it.\
-  - `Always` will always installed missing extensions from .mewrc.json after opening a folder/workspace.\
-  - `mew.extensions.autoAdd`: When an extension is installed, automatically add it to bundles:
-    - `Never`: hide prompt and do nothing.
-    - `All active`: add the extension to all current active bundles automatically.
-    - `Choose your bundle(s)`: let user choose the bundles where the new extension will be added.
-    - `Prompt`: prompt for above choices.
-  - `mew.extensions.autoRemove`: When an extension is uninstalled, automatically remove it from bundles:
-    - `Never`: hide prompt and do nothing.
-    - `All active`: remove the extension from all current active bundles
-    - `Choose your bundle(s)`: let user choose the bundles where the new extension will be removed from.
-    - `Prompt`: prompt for above choices.
+- `mew.ignoredListExtensions`:\
+Extensions's state won't be changed by MEW, these extensions won't be listed when creating or editing bundles.
+- `mew.ignoreRemoteExtensions`: \
+Ignore VS Code Remote extensions. Same as the above ignoredList for:
+  - `ms-vscode-remote.remote-ssh`,
+  - `ms-vscode-remote.remote-ssh-edit`,
+  - `ms-vscode-remote.remote-wsl`,
+  - `ms-vscode-remote.remote-container`
+- `mew.workspace.autoLoad`: \
+When a .mewrc.json is found in the current workspace/folder, what should MEW do about loading those extensions ?
+  - `Ask you` Prompt: 'Some extensions to load were found inside the .mewrc.json, What should MEW do with it ?', Actions: 'Don't ask me again', 'Always load them', 'Load them & keep asking me'.
+  - `Keep calm & sleep` Let MEW sleeps. No future prompts.
+  - `Always do it` Always load extensions when opening a workspace or a folder.
+- `mew.workspace.autoInstall`: \
+When a .mewrc.json is found in the current workspace/folder, what should MEW do about installing those missing extensions ?
+  - `Ask you` Prompt: 'Some extensions listed inside the .mewrc.json aren't installed yet, Whatd should MEW do with it ?', Actions: 'Don't ask me again', 'Always Install them', 'Install them & keep asking me'.
+  - `Keep calm & sleep` Let MEW sleeps. No future prompts.
+  - `Always do it` will always installed missing extensions from .mewrc.json after opening a folder/workspace.
+- `mew.extensions.autoAdd`:
+Whenever an extension is installed, what should MEW do with it ?
+  - `Keep calm & sleep`: Let MEW sleeps. No future prompts.
+  - `Auto-edit all active`: Add the extension to all current active bundles automatically. No prompt.
+  - `Let you select bundle(s)`: Select the bundle(s) where you want to add the new extension.
+  - `Ask you`: Prompt 'Which bundle(s) should MEW add the extension ${extensionName} to ? 'Don't ask me again', 'All active' and 'Select', 'None'.
+- `mew.extensions.autoRemove`: \Whenever an extension is uninstalled, what should MEW do with it ?
+  - `Keep calm & sleep`: Let MEW sleeps. No future prompts.
+  - `Auto-edit all active`: Remove the extension from all current active bundles automatically. No prompt.
+  - `Let you select bundle(s)`: Select the bundle(s) where you want to remove the extension.
+  - `Ask you`: Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'.
 
 ## Requirements
 
