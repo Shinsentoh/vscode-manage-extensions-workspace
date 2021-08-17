@@ -25,7 +25,7 @@ You are in charge, use them as you like!
 - :bulb: have an optional project file settings like a .mew file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install and load them. Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
 - :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use
 - :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (add a setting to prevent prompt or automatically remove it without asking)
-- :bulb: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
+- :white_check_mark: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
 - :bulb: investigate if all vscode windows that share the same active bundle, could be reloaded if this bundle was edited. (based on a setting)
 - :bulb: determine what to do when an extension state changes from the extension viewpanel
 - :bulb: add settings to specify :
@@ -67,6 +67,18 @@ Whenever an extension is installed, what should MEW do with it ?
   - `Auto-edit all active`: Remove the extension from all current active bundles automatically. No prompt.
   - `Let you select bundle(s)`: Select the bundle(s) where you want to remove the extension.
   - `Ask you`: Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'.
+
+## Settings Sync Configuration
+
+### Using VS Code Settings Sync
+
+After turning it on, you'll get your bundles from any synced machine.\
+At this moment (August 2021), VS Code doesn't support sharing workspace settings/state, so no other capabilities.
+
+### Using Settings Sync Extensions
+
+After turning it on, you'll get your bundles from any synced machine.\
+Workspace settings: Currently under investigation because I don't think that a folder opened on a machine A has the same workspace ID as the same folder on a machine B, even with the same path (which is unlikely).
 
 ## Requirements
 

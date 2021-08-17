@@ -53,7 +53,7 @@
         "command": "mew.extension.select",
         "title": "Select bundles",
         "category": "MEW",
-        "shortTitle": "Select bundles"
+        "shortTitle": "Select bundle(s)"
       },
       {
         "command": "mew.bundle.create",
@@ -71,7 +71,7 @@
         "command": "mew.bundle.delete",
         "title": "Delete bundle",
         "category": "MEW",
-        "shortTitle": "Delete bundle"
+        "shortTitle": "Delete bundle(s)"
       },
       {
         "command": "mew.extension.disable",
