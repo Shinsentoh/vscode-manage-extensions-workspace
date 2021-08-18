@@ -33,14 +33,14 @@ class ProfileService implements vscode.Disposable {
 
       if (bundles.length > 1) {
         profileLabel = `${bundles.length} bundles`;
-        profileTooltip = bundles.join('\' | \'');
+        profileTooltip = bundles.join('\'\n- \'');
       }
       else if (bundles.length === 1) {
         profileTooltip = profileLabel = bundles[0];
       }
 
-      this._statusBarItem.text = `$(extensions) ${profileLabel}`;
-      this._statusBarItem.tooltip = `using bundles: '${profileTooltip}'`;
+      this._statusBarItem.text = `$(extensions) ${profileLabel.length > 10 ? "1 bundle" : profileLabel }`;
+      this._statusBarItem.tooltip = `using bundles:\n- '${profileTooltip}'`;
       this._statusBarItem.show();
     }
   }

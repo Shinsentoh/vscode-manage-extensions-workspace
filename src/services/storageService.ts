@@ -131,7 +131,8 @@ class StorageService implements vscode.Disposable {
 
   /**
    * We must open the db and insert manually rather than use the workspaceState because workspaceState
-   * set the colum key to the name of this extension and create an object of our key that wrap our extension list and put those in the value column ...
+   * set the colum key to the name of this extension and create an object of our key
+   * that wrap our extension list and put those in the value column ...
    * @param extensions: list of {@link Extension} to enable or disable
    * @param state: "enabled" | "disabled"
    */
@@ -141,7 +142,9 @@ class StorageService implements vscode.Disposable {
     try {
       const sqlite3 = require('sqlite3');
       const db = new sqlite3.Database(`${dbPath}${Utils.platformSlash}state.vscdb`);
-      db.prepare("INSERT OR REPLACE INTO ItemTable (key, value) VALUES (?, ?)").run(`${Constant.workspaceExtensionsStateKey}/${state}`, JSON.stringify(extensions));
+      db
+        .prepare("INSERT OR REPLACE INTO ItemTable (key, value) VALUES (?, ?)")
+        .run(`${Constant.workspaceExtensionsStateKey}/${state}`, JSON.stringify(extensions));
       db.close();
     }
     catch(e: any) {
@@ -150,10 +153,13 @@ class StorageService implements vscode.Disposable {
   }
 
   /**
-   * The idea here is to get the parent directory of this extension which must be the vscode Extensions folder if installed through marketplace or with a .vsix.
+   * The idea here is to get the parent directory of this extension which must be the vscode Extensions folder
+   * if installed through marketplace or with a .vsix.
    * _______________________
-   * @debug_only The only downside is when you debug this extension, this extension runs in its repo folder, therefore we fallback to the default VS Code Extensions folder (see {@link Utils.getDefaultVSCodeExtensionsPath}).
-   * If you don't use the default folders listed in getDefaultVSCodeExtensionsPath(), then add a env variable 'CUSTOM_VSCODE_EXTENSIONS_FOLDER' in the launch.json
+   * @debug_only The only downside is when you debug this extension, this extension runs in its repo folder,
+   * therefore we fallback to the default VS Code Extensions folder (see {@link Utils.getDefaultVSCodeExtensionsPath}).
+   * If you don't use the default folders listed in getDefaultVSCodeExtensionsPath(),
+   * then add a env variable 'CUSTOM_VSCODE_EXTENSIONS_FOLDER' in the launch.json
    * but don't commit this change please.
    * @returns VS Code Extensions path
    */

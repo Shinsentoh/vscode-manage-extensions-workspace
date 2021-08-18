@@ -25,7 +25,8 @@ You are in charge, use them as you like!
 - :bulb: have an optional project file settings like a .mew file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install and load them. Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
 - :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use
 - :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (add a setting to prevent prompt or automatically remove it without asking)
-- :bulb: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
+- :white_check_mark: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
+- :bulb: implement workspace setting sync through global state (see 'Settings Sync Configuration' section for reason).
 - :bulb: investigate if all vscode windows that share the same active bundle, could be reloaded if this bundle was edited. (based on a setting)
 - :bulb: determine what to do when an extension state changes from the extension viewpanel
 - :bulb: add settings to specify :
@@ -67,6 +68,25 @@ Whenever an extension is installed, what should MEW do with it ?
   - `Auto-edit all active`: Remove the extension from all current active bundles automatically. No prompt.
   - `Let you select bundle(s)`: Select the bundle(s) where you want to remove the extension.
   - `Ask you`: Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'.
+
+## Settings Sync Configuration
+
+### Using VS Code Settings Sync
+
+After turning it on, you'll get your bundles from any synced machine.\
+At this moment (August 2021), VS Code doesn't support sharing workspace settings/state.
+
+### Using Settings Sync Extensions
+
+After turning it on, you'll get your bundles from any synced machine.\
+Workspace settings: Settings Sync Extensions can copy workspace settings over but right now VS Code workspace ID strategy doesn't give the same ID for a folder if you don't exactly have the same absolute path on n different machines.\
+Meaning that d:\repos\vs-code on machine A and e:\sources\vs-code on machien B doesn't produce the same ID for their workspace state folders (which is not a bug, it's normal) but it prevents us to copy over our extensions set by folder and get it automatically on the other end.
+
+### Plan for Workspace Settings Sync
+MEW will offer an option to keep a global state of which folder is using which bundles (in order to minimize memory usage for those who won't use this feature). This global state will be used to reload the right extensions when opening a folder.\
+MEW is still thinking about the folder ID..., although folder name only is tempting, problems could arise if 2+ projects had the same fodler name.\
+MEW could take the git repository to check if it's the same "project", but it should have to support all version control system and what about people who don't use them ?
+MEW is still thinking, feel free to help by contribuing !.
 
 ## Requirements
 
