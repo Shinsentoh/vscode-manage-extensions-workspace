@@ -13,8 +13,15 @@ import BundleService from "./services/bundleService";
 export function activate(context: vscode.ExtensionContext) {
   console.log('vscode-manage-extensions-workspaces has been activated.');
   Container.set(Constants.contextContainerKey, context);
+
+  registerCommands(context);
+  registerKeysToSync(context);
+
+  initialize();
+}
+
+function registerCommands(context: vscode.ExtensionContext) {
   const bundleService = Container.get(BundleService);
-  const profileService = Container.get(ProfileService);
 
   // Registration commands
   context.subscriptions.push(
@@ -25,12 +32,19 @@ export function activate(context: vscode.ExtensionContext) {
     // vscode.commands.registerCommand(CommandType.disableExtension, DisableExtension),
     // vscode.commands.registerCommand(CommandType.enableExtension, EnableExtension)
   );
+}
 
+function registerKeysToSync(context: vscode.ExtensionContext) {
+  context.globalState.setKeysForSync([Constants.appInstalledExtensionsKey, Constants.appBundlesKey]);
+}
+
+function initialize() {
+  const profileService = Container.get(ProfileService);
   profileService.updateStatusBar();
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	console.log('vscode-manage-extensions-workspaces is disabled.');
+	console.log('vscode-manage-extensions-workspaces is desactivated.');
   Container.reset();
 }

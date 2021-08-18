@@ -110,6 +110,20 @@
         }
       ]
     },
+    "keybindings": [
+      {
+        "command": "mew.extension.select",
+        "key": "ctrl+m ctrl+s"
+      },
+      {
+        "command": "mew.bundle.create",
+        "key": "ctrl+m ctrl+c"
+      },
+      {
+        "command": "mew.bundle.edit",
+        "key": "ctrl+m ctrl+e"
+      }
+    ],
     "configuration": {
       "title": "MEW",
       "properties": {
