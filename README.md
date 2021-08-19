@@ -2,43 +2,46 @@
 
 # MEW - Workspace Extensions Manager
 
-Goal: Create Bundles of extensions to have only the necessary extensions enabled for a project and limit memory usage while having different VS Code instance run another set of extensions.\
-Apply one or more bundles of extensions on any project/workspace.
+Goal: MEW will let you define bundles that you can select (one or many) and use for a specific workspace.\
+You can define a bundle once and use it on different workspaces along with other bundles if needed.\
+Those bundles are available through all VS Code instances, but when you select one or more bundle(s) for a workspace, that set of extensions only apply to this specific workspace.\
+Meaning that you can have bundles A, D and I for the Folder 1 (first vs code instance) and bundles A, B and C for folder 2 (2nd vs code instance), and so on with as many folder you want.\
 
-In a few words, bundles are a set of extensions designed to load these latter on a specific project without worrying of your ESlint extension running on a different powershell project for instance.
+Create as many bundles as you want, use them as you like!
 
-You are in charge, use them as you like!
+## Vocabulary
+bundle: a set of VS Code extensions.\
+profile: a set of selected bundles per workspace.\
+workspace: a folder or [multi-root workspace](https://code.visualstudio.com/docs/editor/workspaces#_multiroot-workspaces).\
 
 ## Features
 
 ### Main features
 
-- :white_check_mark: create bundles that have one or more extensions, shared across any VS Code instance (sharing the same User Profile).
-- :white_check_mark: edit a bundle (add/remove extensions)
-- :white_check_mark: delete a profile
-- :white_check_mark: select one or more bundle(s) and load extensions for current project/workspace.
+- :white_check_mark: create bundles that have one or more extensions, shared across any VS Code instance (VS Code instances need to share the same user profile directory).
+- :white_check_mark: edit a bundle (add/remove extensions from it).
+- :white_check_mark: delete one or more bundles.
+- :white_check_mark: select one or more bundle(s) and load extensions for current workspace.
 
 ### Nice to have:
-- :white_check_mark: While in the Add/remove extensions list, handle extension that uses i18n in their package.json (ie: %extension.displayName.title% becomes 'whatever value was set for this language or fallback to english in the package.nsl.[lang].json')
-- :white_check_mark: add a statusBar with the selected bundle name loaded or 'bundles ...' for many bundles or 'none' if no bundle is selected. Clicking it let you choose bundles to use for this project/workspace.
+- :white_check_mark: While in the Add/Remove extensions list, handle extension that uses i18n in their package.json (ie: %extension.displayName.title% becomes 'whatever value was set for this language or fallback to english in the package.nsl[.lang].json')
+- :white_check_mark: add a statusBar with the selected bundle name loaded or 'N bundles' for many bundles or 'none' if no bundle is selected. Clicking on it opens the command palette filtered on MEW available commands. (mostly for people that doesn't use command palette shortcut, could add a user setting to directly select bundles to use for this workspace instead)
 - :white_check_mark: when creating a bundle, precheck the currently active extensions in VS Code.
-- :bulb: have an optional project file settings like a .mew file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install and load them. Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
-- :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use
-- :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (add a setting to prevent prompt or automatically remove it without asking)
-- :white_check_mark: Check if the extension 'Settings Sync' can keep our workspaces configuration of selected bundles across computers.
-- :bulb: implement workspace setting sync through global state (see 'Settings Sync Configuration' section for reason).
+- :bulb: have an optional project file settings like a .mewrc.json file that would let a team configure a list of extensions to be used for this project, show a prompt that would allow you to install missing ones and load them (see [`mew.workspace.autoLoad` and `mew.workspace.autoLoad`](#mewrcjson) for details). Must handle TrustedWorkspace opt-in before doing anything (https://code.visualstudio.com/api/extension-guides/workspace-trust)
+- :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use (see [`mew.workspace.autoAdd`](#extension-view-panel) for details)
+- :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (see [`mew.workspace.autoRemove`](#extension-view-panel) for details)
+- :white_check_mark: 'Settings Sync' should keep our bundles across computers.
+- :bulb: 'Settings Sync' should keep our workspaces configuration across computers.
 - :bulb: investigate if all vscode windows that share the same active bundle, could be reloaded if this bundle was edited. (based on a setting)
-- :bulb: determine what to do when an extension state changes from the extension viewpanel
-- :bulb: add settings to specify :
-    - should we reload window when active bundle is edited ? all windows that shares the same active bundle ?
+- :bulb: determine what to do when an extension is enabled or disabled from the extension viewpanel.
 - :bulb: add localization on package. (very last priority)
 - :white_check_mark: add webpack to bundle vsix package.
-- :white_check_mark: Download automatically the right sqlite3 driver for your platform at first run, if it doesn't exists, notify user, he won't be able to use this extension at all.
+- :white_check_mark: Download automatically the right sqlite3 driver for your platform at first run, if it doesn't exists, notify user, he won't be able to use this extension at all and help him uninstall it.
 - :bulb: Add unit tests using Jest
 - :bulb: Add a logger and/or vscode-extension-telemetry to get fatal exceptions on azure insights ?
-
+- :bulb: Add a performance logger, in dev only, to optimize memory usage.
 ## Extension Settings
-
+### General
 - `mew.ignoredListExtensions`:\
 Extensions's state won't be changed by MEW, these extensions won't be listed when creating or editing bundles.
 - `mew.ignoreRemoteExtensions`: \
@@ -47,6 +50,7 @@ Ignore VS Code Remote extensions. Same as the above ignoredList for:
   - `ms-vscode-remote.remote-ssh-edit`,
   - `ms-vscode-remote.remote-wsl`,
   - `ms-vscode-remote.remote-container`
+### .mewrc.json
 - `mew.workspace.autoLoad`: \
 When a .mewrc.json is found in the current workspace/folder, what should MEW do about loading those extensions ?
   - `Ask you` Prompt: 'Some extensions to load were found inside the .mewrc.json, What should MEW do with it ?', Actions: 'Don't ask me again', 'Always load them', 'Load them & keep asking me'.
@@ -57,6 +61,7 @@ When a .mewrc.json is found in the current workspace/folder, what should MEW do 
   - `Ask you` Prompt: 'Some extensions listed inside the .mewrc.json aren't installed yet, Whatd should MEW do with it ?', Actions: 'Don't ask me again', 'Always Install them', 'Install them & keep asking me'.
   - `Keep calm & sleep` Let MEW sleeps. No future prompts.
   - `Always do it` will always installed missing extensions from .mewrc.json after opening a folder/workspace.
+### Extension View Panel
 - `mew.extensions.autoAdd`:
 Whenever an extension is installed, what should MEW do with it ?
   - `Keep calm & sleep`: Let MEW sleeps. No future prompts.
@@ -68,60 +73,27 @@ Whenever an extension is installed, what should MEW do with it ?
   - `Auto-edit all active`: Remove the extension from all current active bundles automatically. No prompt.
   - `Let you select bundle(s)`: Select the bundle(s) where you want to remove the extension.
   - `Ask you`: Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'.
-
 ## Settings Sync Configuration
-
 ### Using VS Code Settings Sync
-
 After turning it on, you'll get your bundles from any synced machine.\
 At this moment (August 2021), VS Code doesn't support sharing workspace settings/state.
-
 ### Using Settings Sync Extensions
-
 After turning it on, you'll get your bundles from any synced machine.\
 Workspace settings: Settings Sync Extensions can copy workspace settings over but right now VS Code workspace ID strategy doesn't give the same ID for a folder if you don't exactly have the same absolute path on n different machines.\
 Meaning that d:\repos\vs-code on machine A and e:\sources\vs-code on machien B doesn't produce the same ID for their workspace state folders (which is not a bug, it's normal) but it prevents us to copy over our extensions set by folder and get it automatically on the other end.
-
 ### Plan for Workspace Settings Sync
-MEW will offer an option to keep a global state of which folder is using which bundles (in order to minimize memory usage for those who won't use this feature). This global state will be used to reload the right extensions when opening a folder.\
+MEW will offer a setting to keep a global state of which folder is using which bundles (in order to minimize memory usage for those who won't use this feature). This global state will be used to reload the right extensions when opening a folder.\
 MEW is still thinking about the folder ID..., although folder name only is tempting, problems could arise if 2+ projects had the same fodler name.\
 MEW could take the git repository to check if it's the same "project", but it should have to support all version control system and what about people who don't use them ?
 MEW is still thinking, feel free to help by contribuing !.
-
 ## Requirements
-
 you need nodeJS >= 14.x and VS Code >= 1.57.0
-
 ## First run
-
-```
-npm install -g yarn
-yarn
-```
+`npm install -g yarn` (if you don't already have yarn installed)\
+`yarn`\
 F5 to debug (choose 'Debug Extension' if prompted)
+## Package as .vsix
+`vsce package`
 
 -----------------------------------------------------------------------------------------------------------
-
-## Usage Example
-
-### Use Case 1
-
-Let's say you want to open a NestJs project (where you must activate SonarQube) that plays with a mssql database, and the project is hosted on Azure repos:
-- you might create a first bundle/profile 'nestjs' with extensions like nestjs Snippets, eslint, auto Close tag, and so on.
-- another one with Sql server, sql tools, ...
-- and one with azure tools, azure repos, pipelines, ...
-
-Then you'd pick those three bundles as a combined profile for this NestJs project.
-
-That's great but what about projects using reactjs extensions, still using a sql server database but hosted on GitHub ?
-Well, just create a bundle for reactJs and another for GitHub extensions and pick the already existing one for sql server. they will be active for this second projet, while the first one will still have his set of activs bundles.
-
-All your projects where you set some bundles to be used will be reopened with their extensions list.
-
-### Use Case 2
-
-You could totally have X projects opened and using the same one and only profile for all your NodeJs projets and having another project using one or a bunch of bundles to work with .Net Core, mysql, docker, etc.
-
-### use case 3
-
-You could also have a bundle that pack all the extensions used by a specific company for all its projects and another for a second company or a unique bundle for all your projects.
+## Contributors

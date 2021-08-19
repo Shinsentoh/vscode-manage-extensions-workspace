@@ -9,8 +9,12 @@ export type Bundle = {
 };
 
 export type Profile = {
-  name: string,
-  bundles: Bundle[]
+  lastChanges: Date,
+  bundleNames: string[]
+};
+
+export type ProfileList = {
+  [name: string]: Profile
 };
 
 export type ExtensionDetail = {

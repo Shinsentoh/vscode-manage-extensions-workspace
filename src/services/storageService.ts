@@ -18,7 +18,7 @@ class StorageService implements vscode.Disposable {
   }
 
   dispose() {
-    return;
+    this._ctxService.dispose();
   }
 
   public async store<T = any>(key: string, state: T, scope = Scope.global): Promise<boolean> {

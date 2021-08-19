@@ -34,17 +34,17 @@
   "main": "./dist/extension.js",
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": false,
-      "description": ""
+      "supported": true,
+      "description": "Until .mewrc.json functionality is implemented, we do not load information from workspace"
     }
   },
   "activationEvents": [
     "onCommand:mew.bundle.create",
+    "onCommand:mew.bundle.delete",
+    "onCommand:mew.bundle.edit",
+    "onCommand:mew.extension.disable",
     "onCommand:mew.extension.enable",
     "onCommand:mew.extension.select",
-    "onCommand:mew.bundle.create",
-    "onCommand:mew.bundle.edit",
-    "onCommand:mew.bundle.delete",
     "onStartupFinished"
   ],
   "contributes": {
@@ -140,6 +140,12 @@
           "minItems": 0,
           "uniqueItems": true
         },
+        "mew.syncWorkspacesProfile": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "markdownDescription": "Once bundles are set for a workspace, opening the same workspace on a different synced machine will load the same set of bundles."
+        },
         "mew.ignoreRemoteExtensions": {
           "type": "boolean",
           "default": false,
@@ -149,7 +155,12 @@
         "mew.extensions.autoAdd": {
           "type": "string",
           "default": "Ask you",
-          "enum": ["Ask you", "Keep calm & sleep", "Auto-edit all active", "Let you select bundle(s)"],
+          "enum": [
+            "Ask you",
+            "Keep calm & sleep",
+            "Auto-edit all active",
+            "Let you select bundle(s)"
+          ],
           "enumDescriptions": [
             "Prompt 'Which bundle(s) should MEW add the extension ${extensionName} to ? 'Don't ask me again', 'All active' and 'Select', 'None'",
             "Let MEW sleeps and do nothing. No Prompt",
@@ -162,7 +173,12 @@
         "mew.extensions.autoRemove": {
           "type": "string",
           "default": "Ask you",
-          "enum": ["Ask you", "Keep calm & sleep", "Auto-edit all active", "Let you select bundle(s)"],
+          "enum": [
+            "Ask you",
+            "Keep calm & sleep",
+            "Auto-edit all active",
+            "Let you select bundle(s)"
+          ],
           "enumDescriptions": [
             "Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'",
             "Let MEW sleeps. No Prompt",
@@ -175,7 +191,11 @@
         "mew.workspace.autoLoad": {
           "type": "string",
           "default": "Ask you",
-          "enum": ["Ask you", "Keep calm & sleep", "Always do it"],
+          "enum": [
+            "Ask you",
+            "Keep calm & sleep",
+            "Always do it"
+          ],
           "enumDescriptions": [
             "Prompt: 'Some extensions to load were found inside the .mewrc.json, What should MEW do with it ?', Actions: 'Don't ask me again', 'Always load them', 'Load them & keep asking me'",
             "Let MEW sleeps. No future prompts.",
@@ -187,7 +207,11 @@
         "mew.workspace.autoInstall": {
           "type": "string",
           "default": "Ask you",
-          "enum": ["Ask you", "Keep calm & sleep", "Always do it"],
+          "enum": [
+            "Ask you",
+            "Keep calm & sleep",
+            "Always do it"
+          ],
           "enumDescriptions": [
             "Prompt: 'Some extensions listed inside the .mewrc.json aren't installed yet, Whatd should MEW do with it ?', Actions: 'Don't ask me again', 'Always Install them', 'Install them & keep asking me'",
             "Let MEW sleeps. No future prompts",

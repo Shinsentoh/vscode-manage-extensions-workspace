@@ -5,6 +5,7 @@ export const appProfilesKey = `${appKey}:global/profiles`;
 export const appInstalledExtensionsKey = `${appKey}:global/installedExtensions`;
 
 export const currentProfileKey = `${appKey}:workspace/currentProfile`;
+export const lastProfileSyncedDateKey = `${appKey}:workspace/lastProfileSyncedDate`;
 
 export const workspaceExtensionsStateKey = 'extensionsIdentifiers';
 
@@ -26,4 +27,5 @@ export class SettingsContribKey {
   public static readonly autoInstall = "mew.workspace.autoInstall";
   public static readonly autoAdd = "mew.extensions.autoAdd";
   public static readonly autoRemove = "mew.extensions.autoRemove";
+  public static readonly syncWorkspacesProfile = "mew.syncWorkspacesProfile";
 }

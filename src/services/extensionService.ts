@@ -39,7 +39,7 @@ class ExtensionService implements vscode.Disposable {
       const availableExtensions = installedExtensions.filter(i => !ignoredExtensions.includes(i.id));
       this._isExtensionsCached = true;
       // store datas async
-      this._storageService.store(Constant.appInstalledExtensionsKey, availableExtensions, Scope.global);
+      this._storageService.store(Constant.appInstalledExtensionsKey, availableExtensions);
       return installedExtensions;
     }
   }
@@ -73,7 +73,11 @@ class ExtensionService implements vscode.Disposable {
 
   dispose() {
     this._oldVsCodeExtensionIdList = '';
+    this._ctxService.dispose();
+    this._settingsService.dispose();
+    this._storageService.dispose();
   }
+
 
   // For now, it removes extensions cache when extensions list has changed
   // ...
@@ -99,7 +103,7 @@ class ExtensionService implements vscode.Disposable {
     // creates cache if not set
     await this.setAvailableExtensionsCache();
 
-    const cachedExtensions = await this._storageService.getState<ExtensionDetail[]>(Constant.appInstalledExtensionsKey, Scope.global);
+    const cachedExtensions = await this._storageService.getState<ExtensionDetail[]>(Constant.appInstalledExtensionsKey);
     return cachedExtensions ?? [];
   }
 

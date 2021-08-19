@@ -7,17 +7,28 @@ import { CommandsContribKey } from "./constants";
 import * as Constants from "./constants";
 import ProfileService from "./services/profileService";
 import BundleService from "./services/bundleService";
+import SyncService from "./services/syncService";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   console.log('vscode-manage-extensions-workspaces has been activated.');
+
   Container.set(Constants.contextContainerKey, context);
 
   registerCommands(context);
-  registerKeysToSync(context);
 
-  initialize();
+  const syncService = Container.get(SyncService);
+  syncService.initialize();
+
+  const profileService = Container.get(ProfileService);
+  profileService.updateStatusBar();
+}
+
+// this method is called when your extension is deactivated
+export function deactivate() {
+	console.log('vscode-manage-extensions-workspaces is desactivated.');
+  Container.reset();
 }
 
 function registerCommands(context: vscode.ExtensionContext) {
@@ -34,17 +45,3 @@ function registerCommands(context: vscode.ExtensionContext) {
   );
 }
 
-function registerKeysToSync(context: vscode.ExtensionContext) {
-  context.globalState.setKeysForSync([Constants.appInstalledExtensionsKey, Constants.appBundlesKey]);
-}
-
-function initialize() {
-  const profileService = Container.get(ProfileService);
-  profileService.updateStatusBar();
-}
-
-// this method is called when your extension is deactivated
-export function deactivate() {
-	console.log('vscode-manage-extensions-workspaces is desactivated.');
-  Container.reset();
-}
