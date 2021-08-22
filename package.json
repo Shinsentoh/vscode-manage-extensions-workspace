@@ -39,51 +39,45 @@
     }
   },
   "activationEvents": [
+    "onCommand:mew.extension.select",
     "onCommand:mew.bundle.create",
-    "onCommand:mew.bundle.delete",
     "onCommand:mew.bundle.edit",
+    "onCommand:mew.bundle.delete",
     "onCommand:mew.extension.disable",
     "onCommand:mew.extension.enable",
-    "onCommand:mew.extension.select",
     "onStartupFinished"
   ],
   "contributes": {
     "commands": [
       {
         "command": "mew.extension.select",
-        "title": "Select bundles",
-        "category": "MEW",
-        "shortTitle": "Select bundle(s)"
+        "title": "Select bundle(s)",
+        "category": "MEW"
       },
       {
         "command": "mew.bundle.create",
         "title": "Create bundle",
-        "category": "MEW",
-        "shortTitle": "Create bundle"
+        "category": "MEW"
       },
       {
         "command": "mew.bundle.edit",
         "title": "Edit bundle",
-        "category": "MEW",
-        "shortTitle": "Edit bundle"
+        "category": "MEW"
       },
       {
         "command": "mew.bundle.delete",
-        "title": "Delete bundle",
-        "category": "MEW",
-        "shortTitle": "Delete bundle(s)"
+        "title": "Delete bundle(s)",
+        "category": "MEW"
       },
       {
         "command": "mew.extension.disable",
         "title": "Disable (bundle)",
-        "category": "MEW",
-        "shortTitle": "Disable (bundle)"
+        "category": "MEW"
       },
       {
         "command": "mew.extension.enable",
         "title": "Enable (bundle)",
-        "category": "MEW",
-        "shortTitle": "Enable (bundle)"
+        "category": "MEW"
       }
     ],
     "menus": {
@@ -140,85 +134,31 @@
           "minItems": 0,
           "uniqueItems": true
         },
-        "mew.syncWorkspacesProfile": {
-          "type": "boolean",
-          "default": false,
-          "scope": "application",
-          "markdownDescription": "Once bundles are set for a workspace, opening the same workspace on a different synced machine will load the same set of bundles."
-        },
         "mew.ignoreRemoteExtensions": {
           "type": "boolean",
           "default": false,
           "scope": "window",
           "markdownDescription": "Ignore VS Code Remote extensions. merged into the above ignoredList for:\n- `ms-vscode-remote.remote-ssh`\n - `ms-vscode-remote.remote-ssh-edit`\n - `ms-vscode-remote.remote-wsl`\n - `ms-vscode-remote.remote-container`"
         },
-        "mew.extensions.autoAdd": {
-          "type": "string",
-          "default": "Ask you",
-          "enum": [
-            "Ask you",
-            "Keep calm & sleep",
-            "Auto-edit all active",
-            "Let you select bundle(s)"
-          ],
-          "enumDescriptions": [
-            "Prompt 'Which bundle(s) should MEW add the extension ${extensionName} to ? 'Don't ask me again', 'All active' and 'Select', 'None'",
-            "Let MEW sleeps and do nothing. No Prompt",
-            "Add the extension to all current active bundles automatically. No prompt",
-            "Select the bundle(s) where you want to add the new extension."
-          ],
-          "scope": "window",
-          "markdownDescription": "Whenever an extension is installed, what should MEW do with it ?"
+        "mew.syncWorkspacesProfile": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "markdownDescription": "Once bundles are set for a workspace, opening the same workspace on a different synced machine will load the same set of bundles."
         },
-        "mew.extensions.autoRemove": {
+        "mew.actionStatusBar": {
           "type": "string",
-          "default": "Ask you",
+          "default": "MEW Commands",
           "enum": [
-            "Ask you",
-            "Keep calm & sleep",
-            "Auto-edit all active",
-            "Let you select bundle(s)"
+            "MEW Commands",
+            "Select bundle(s)"
           ],
           "enumDescriptions": [
-            "Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'",
-            "Let MEW sleeps. No Prompt",
-            "Remove the extension from all current active bundles automatically. No prompt",
-            "Select the bundle(s) where you want to remove the extension."
+            "MEW will show all its commands",
+            "MEW will let you select one or many bundles to use for the opened workspace."
           ],
-          "scope": "window",
-          "markdownDescription": "Whenever an extension is uninstalled, what should MEW do with it ?"
-        },
-        "mew.workspace.autoLoad": {
-          "type": "string",
-          "default": "Ask you",
-          "enum": [
-            "Ask you",
-            "Keep calm & sleep",
-            "Always do it"
-          ],
-          "enumDescriptions": [
-            "Prompt: 'Some extensions to load were found inside the .mewrc.json, What should MEW do with it ?', Actions: 'Don't ask me again', 'Always load them', 'Load them & keep asking me'",
-            "Let MEW sleeps. No future prompts.",
-            "Always load extensions when opening a workspace or a folder. No future prompts."
-          ],
-          "scope": "window",
-          "markdownDescription": "When a .mewrc.json is found in the current workspace/folder, what should MEW do about loading those extensions ?"
-        },
-        "mew.workspace.autoInstall": {
-          "type": "string",
-          "default": "Ask you",
-          "enum": [
-            "Ask you",
-            "Keep calm & sleep",
-            "Always do it"
-          ],
-          "enumDescriptions": [
-            "Prompt: 'Some extensions listed inside the .mewrc.json aren't installed yet, Whatd should MEW do with it ?', Actions: 'Don't ask me again', 'Always Install them', 'Install them & keep asking me'",
-            "Let MEW sleeps. No future prompts",
-            "Always install missing extensions when opening a workspace or a folder. No future prompts."
-          ],
-          "scope": "window",
-          "markdownDescription": "When a .mewrc.json is found in the current workspace/folder, what should MEW do about installing those missing extensions ?"
+          "scope": "application",
+          "markdownDescription": "when you click on MEW status bar, it will execute the following action:"
         }
       }
     }
@@ -246,6 +186,7 @@
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "auto-changelog": "^2.3.0",
+    "before-build-webpack": "^0.2.11",
     "copy-webpack-plugin": "^9.0.1",
     "eslint": "^7.27.0",
     "jest": "^27.0.6",

@@ -79,3 +79,8 @@ export enum AutoTaskExtensions {
   all = "Auto-edit all active",
   choose = "Let you select bundle(s)"
 }
+
+export enum ActionStatusBar {
+  commands = "MEW Commands",
+  select = "Select bundle(s)"
+}

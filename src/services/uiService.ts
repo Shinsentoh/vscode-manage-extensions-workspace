@@ -4,10 +4,6 @@ import { Bundle, ChooseBundleOptions, ChooseExtensionsOptions, Extension } from 
 
 @Service()
 class UIService implements vscode.Disposable {
-  dispose() {
-    return;
-  }
-
   /**
    * Let you choose extensions to add to a bundle from a QuickPickItem list.
    * @param availableExtensions extensions that are available to pick from.
@@ -107,6 +103,12 @@ class UIService implements vscode.Disposable {
     }
 
     return bundleName;
+  }
+
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    return;
   }
 }
 

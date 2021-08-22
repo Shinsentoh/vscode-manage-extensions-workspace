@@ -17,13 +17,6 @@ class BundleService implements vscode.Disposable {
     private _uiService: UIService,
   ) {}
 
-  dispose() {
-    this._profileService.dispose();
-    this._extensionService.dispose();
-    this._storageService.dispose();
-    this._uiService.dispose();
-  }
-
   /**
    * Select Bundles of extensions to be used for this workspace
    * @returns list of {@link Bundle} or undefined if none selected.
@@ -258,8 +251,14 @@ class BundleService implements vscode.Disposable {
     return bundles?.some(i => i.name === bundleName) ?? false;
   }
 
-  public truc ({name}: Bundle) {
-    console.log(name);
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose bundleService");
+    this._profileService.dispose();
+    this._extensionService.dispose();
+    this._storageService.dispose();
+    this._uiService.dispose();
   }
 }
 

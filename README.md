@@ -2,9 +2,10 @@
 
 # MEW - Workspace Extensions Manager
 
-Goal: MEW will let you define bundles that you can select (one or many) and use for a specific workspace.\
+MEW helps you reduce VS Code memory usage by specifying which extensions you want to enable by workspace.
+
+MEW will let you define bundles of extensions that you can select (one or many) and use for a specific workspace.\
 You can define a bundle once and use it on different workspaces along with other bundles if needed.\
-Those bundles are available through all VS Code instances, but when you select one or more bundle(s) for a workspace, that set of extensions only apply to this specific workspace.\
 Meaning that you can have bundles A, D and I for the Folder 1 (first vs code instance) and bundles A, B and C for folder 2 (2nd vs code instance), and so on with as many folder you want.\
 
 Create as many bundles as you want, use them as you like!
@@ -31,7 +32,7 @@ workspace: a folder or [multi-root workspace](https://code.visualstudio.com/docs
 - :bulb: When extensions are installed while bundles are in use, let user choose if it should be added to the current bundles in use (see [`mew.workspace.autoAdd`](#extension-view-panel) for details)
 - :bulb: When extensions are uninstalled while bundles are in use, let user choose if it should be removed from the current bundles in use (see [`mew.workspace.autoRemove`](#extension-view-panel) for details)
 - :white_check_mark: 'Settings Sync' should keep our bundles across computers.
-- :bulb: 'Settings Sync' should keep our workspaces configuration across computers.
+- :white_check_mark: 'Settings Sync' should keep our workspaces configuration across computers.
 - :bulb: investigate if all vscode windows that share the same active bundle, could be reloaded if this bundle was edited. (based on a setting)
 - :bulb: determine what to do when an extension is enabled or disabled from the extension viewpanel.
 - :bulb: add localization on package. (very last priority)
@@ -49,7 +50,13 @@ Ignore VS Code Remote extensions. Same as the above ignoredList for:
   - `ms-vscode-remote.remote-ssh`,
   - `ms-vscode-remote.remote-ssh-edit`,
   - `ms-vscode-remote.remote-wsl`,
-  - `ms-vscode-remote.remote-container`
+  - `ms-vscode-remote.remote-container`\
+- `mew.syncWorkspacesProfile`:\
+Let you sync workspace's bundle(s) association over computers.\
+example: opening a folder "MyFoder", selecting bundles, waiting ~ 1 min, will let you open the same "MyFolder" on another computer and have the same bundles enabled).
+- `mew.actionStatusBar`:\
+Let you choose the action performed when clicking on the MEW status bar:
+either selecting bundles for opened workspace or list all MEW commands.
 ### .mewrc.json
 - `mew.workspace.autoLoad`: \
 When a .mewrc.json is found in the current workspace/folder, what should MEW do about loading those extensions ?
@@ -62,30 +69,28 @@ When a .mewrc.json is found in the current workspace/folder, what should MEW do 
   - `Keep calm & sleep` Let MEW sleeps. No future prompts.
   - `Always do it` will always installed missing extensions from .mewrc.json after opening a folder/workspace.
 ### Extension View Panel
-- `mew.extensions.autoAdd`:
+
+- `mew.extensions.autoAdd`:\
 Whenever an extension is installed, what should MEW do with it ?
   - `Keep calm & sleep`: Let MEW sleeps. No future prompts.
   - `Auto-edit all active`: Add the extension to all current active bundles automatically. No prompt.
   - `Let you select bundle(s)`: Select the bundle(s) where you want to add the new extension.
   - `Ask you`: Prompt 'Which bundle(s) should MEW add the extension ${extensionName} to ? 'Don't ask me again', 'All active' and 'Select', 'None'.
-- `mew.extensions.autoRemove`: \Whenever an extension is uninstalled, what should MEW do with it ?
+- `mew.extensions.autoRemove`: \
+Whenever an extension is uninstalled, what should MEW do with it ?
   - `Keep calm & sleep`: Let MEW sleeps. No future prompts.
   - `Auto-edit all active`: Remove the extension from all current active bundles automatically. No prompt.
   - `Let you select bundle(s)`: Select the bundle(s) where you want to remove the extension.
   - `Ask you`: Prompt 'Which bundle(s) should MEW remove the extension ${extensionName} from ? 'Don't ask me again', 'All active' and 'Select', 'None'.
 ## Settings Sync Configuration
-### Using VS Code Settings Sync
-After turning it on, you'll get your bundles from any synced machine.\
-At this moment (August 2021), VS Code doesn't support sharing workspace settings/state.
-### Using Settings Sync Extensions
-After turning it on, you'll get your bundles from any synced machine.\
-Workspace settings: Settings Sync Extensions can copy workspace settings over but right now VS Code workspace ID strategy doesn't give the same ID for a folder if you don't exactly have the same absolute path on n different machines.\
-Meaning that d:\repos\vs-code on machine A and e:\sources\vs-code on machien B doesn't produce the same ID for their workspace state folders (which is not a bug, it's normal) but it prevents us to copy over our extensions set by folder and get it automatically on the other end.
-### Plan for Workspace Settings Sync
-MEW will offer a setting to keep a global state of which folder is using which bundles (in order to minimize memory usage for those who won't use this feature). This global state will be used to reload the right extensions when opening a folder.\
-MEW is still thinking about the folder ID..., although folder name only is tempting, problems could arise if 2+ projects had the same fodler name.\
-MEW could take the git repository to check if it's the same "project", but it should have to support all version control system and what about people who don't use them ?
-MEW is still thinking, feel free to help by contribuing !.
+
+You can either use VS Code built-in settings Sync, or the Settings Sync Extension.
+
+After turning the "globalstate" and "extensions" settings sync, you'll get your bundles from any synced machine.\
+In August 2021, VS Code doesn't support sharing workspace settings/state, so I reworked profiles code and added an option `mew.syncWorkspacesProfile` which will sync your chosen bundles for a specific workspace across your synced computers.\
+
+One limitation though: if one workspace is opened on X computers, and you change the bundles selection, the new configuration on other computers will be applied within a minute and you'll need to either reload VS Code window or (re)open the workspace.
+
 ## Requirements
 you need nodeJS >= 14.x and VS Code >= 1.57.0
 ## First run

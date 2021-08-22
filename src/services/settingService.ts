@@ -2,12 +2,13 @@
 import { Service } from "typedi";
 import { SettingsContribKey } from "../constants";
 import ContextService from "./contextService";
-import { AutoTask, AutoTaskExtensions } from "../types";
+import { ActionStatusBar, AutoTask, AutoTaskExtensions } from "../types";
 
 @Service()
 class SettingService implements vscode.Disposable {
   private _ignoredExtensionsChangeEmitter = new vscode.EventEmitter<void>();
   private _syncWorkspacesProfileEmitter = new vscode.EventEmitter<boolean>();
+  private _statusBarCommandEmitter = new vscode.EventEmitter<string>();
 
   private _settings: { [k:string]: any } = {};
   private static readonly _ignoredRemoteExtensions = [
@@ -25,13 +26,6 @@ class SettingService implements vscode.Disposable {
     this.loadConfiguration();
   }
 
-  dispose() {
-    this._settings = {};
-    this._ignoredExtensionsChangeEmitter.dispose();
-    this._syncWorkspacesProfileEmitter.dispose();
-    this._ctxService.dispose();
-  }
-
   private loadConfiguration() {
     const contribConfigurations: string[] = Object.values(SettingsContribKey);
     contribConfigurations.forEach((val) => {
@@ -44,14 +38,25 @@ class SettingService implements vscode.Disposable {
     contribConfigurations.forEach((val) => {
       if (event.affectsConfiguration(val)) {
         this.processConfiguraton(val);
-        if (SettingsContribKey.ignoredList === val || SettingsContribKey.ignoredRemote === val) {
-          this._ignoredExtensionsChangeEmitter.fire();
-        }
-        if (SettingsContribKey.syncWorkspacesProfile === val) {
-          this._syncWorkspacesProfileEmitter.fire(this.syncWorkspaceProfile);
-        }
+        this.fireEvents(val);
       }
     }, this);
+  }
+
+  private fireEvents(val: string) {
+    switch(val) {
+      case SettingsContribKey.ignoredList:
+      case SettingsContribKey.ignoredRemote:
+        this._ignoredExtensionsChangeEmitter.fire();
+        break;
+      case SettingsContribKey.syncWorkspacesProfile:
+        this._syncWorkspacesProfileEmitter.fire(this.syncWorkspaceProfile);
+        break;
+      case SettingsContribKey.actionStatusBar:
+        this._statusBarCommandEmitter.fire(this.actionStatusBar);
+        break;
+      default:
+    }
   }
 
   private processConfiguraton(val: string) {
@@ -73,6 +78,7 @@ class SettingService implements vscode.Disposable {
 
   public readonly onDidChangeIgnoredExtensions: vscode.Event<void> = this._ignoredExtensionsChangeEmitter.event;
   public readonly onDidChangeSyncProfile: vscode.Event<boolean> = this._syncWorkspacesProfileEmitter.event;
+  public readonly onDidChangeStatusBarCommand: vscode.Event<string> = this._statusBarCommandEmitter.event;
 
   public get syncWorkspaceProfile():   boolean  { return this._settings[SettingsContribKey.syncWorkspacesProfile] ?? false; }
   public get ignoreRemoteExtensions(): boolean  { return this._settings[SettingsContribKey.ignoredRemote]         ?? false; }
@@ -80,6 +86,18 @@ class SettingService implements vscode.Disposable {
   public get autoRemove():  AutoTaskExtensions  { return this._settings[SettingsContribKey.autoRemove]            ?? AutoTaskExtensions.prompt; }
   public get autoLoad():    AutoTask            { return this._settings[SettingsContribKey.autoLoad]              ?? AutoTask.prompt; }
   public get autoAdd():     AutoTaskExtensions  { return this._settings[SettingsContribKey.autoAdd]               ?? AutoTaskExtensions.prompt; }
+  public get actionStatusBar():        string   { return this._settings[SettingsContribKey.actionStatusBar]       ?? ActionStatusBar.commands; }
+
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose settingService");
+    this._settings = {};
+    this._ignoredExtensionsChangeEmitter.dispose();
+    this._syncWorkspacesProfileEmitter.dispose();
+    this._statusBarCommandEmitter.dispose();
+    this._ctxService.dispose();
+  }
 }
 
 export default SettingService;

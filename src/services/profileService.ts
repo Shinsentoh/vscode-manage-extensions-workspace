@@ -2,9 +2,10 @@
 import { Service } from "typedi";
 
 import * as Constants from "../constants";
-import { Profile, ProfileList, Scope } from "../types";
+import { ActionStatusBar, Profile, ProfileList, Scope } from "../types";
 import ContextService from "./contextService";
 import StorageService from "./storageService";
+import SettingService from "./settingService";
 
 @Service()
 class ProfileService implements vscode.Disposable {
@@ -12,23 +13,17 @@ class ProfileService implements vscode.Disposable {
 
   constructor(
     private _ctxService: ContextService,
-    private _storageService: StorageService
+    private _storageService: StorageService,
+    private _settingService: SettingService
   ) {
     this._statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Left
     );
-    // for people not using shortcuts
-    this._statusBarItem.command = {
-      command: "workbench.action.quickOpen",
-      arguments: [ ">MEW:" ]
-    } as vscode.Command;
-    this._ctxService.context.subscriptions.push(this._statusBarItem);
-  }
-
-  dispose() {
-    this._statusBarItem.dispose();
-    this._ctxService.dispose();
-    this._storageService.dispose();
+    this.setStatusBarCommand(this._settingService.actionStatusBar);
+    this._ctxService.context.subscriptions.push(
+      this._statusBarItem,
+      this._settingService.onDidChangeStatusBarCommand(val => this.setStatusBarCommand(val))
+    );
   }
 
   public async updateStatusBar(): Promise<void> {
@@ -50,11 +45,27 @@ class ProfileService implements vscode.Disposable {
     this._statusBarItem.show();
   }
 
+  private setStatusBarCommand(action: string) {
+    switch (action) {
+      case ActionStatusBar.select:
+        this._statusBarItem.command = Constants.CommandsContribKey.selectProfile;
+        break;
+      case ActionStatusBar.commands:
+      default:
+        // for people not using shortcuts
+        this._statusBarItem.command = {
+          command: "workbench.action.quickOpen",
+          arguments: [ `>${Constants.appName}:` ]
+        } as vscode.Command;
+        break;
+    }
+  }
+
   public async setCurrentProfile(bundleNames: string[] | undefined) {
     if (bundleNames) {
-      const folderName = this.profileKey;
-      if (folderName) {
-        await this.upsertProfile(folderName, bundleNames);
+      const profileKey = this.profileKey;
+      if (profileKey) {
+        await this.upsertProfile(profileKey, bundleNames);
         await this.updateStatusBar();
       }
     }
@@ -84,15 +95,25 @@ class ProfileService implements vscode.Disposable {
   }
 
   public async getCurrentProfile(): Promise<Profile | undefined> {
-    const folderName = this.profileKey;
-    if (folderName) {
+    const profileKey = this.profileKey;
+    if (profileKey) {
       const profiles = await this.getProfiles() ?? {};
-      return profiles[folderName];
+      return profiles[profileKey];
     }
   }
 
   public get profileKey(): string | undefined {
     return vscode.workspace.name;
+  }
+
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose profileService");
+    this._statusBarItem.dispose();
+    this._ctxService.dispose();
+    this._storageService.dispose();
+    this._settingService.dispose();
   }
 }
 

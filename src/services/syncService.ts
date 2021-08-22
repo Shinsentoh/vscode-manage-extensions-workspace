@@ -19,19 +19,19 @@ class SyncService implements vscode.Disposable {
 
   constructor(
     private _ctxService: ContextService,
-    private _settingsService: SettingService,
+    private _settingService: SettingService,
     private _profileService: ProfileService,
     private _bundleService: BundleService,
     private _extensionService: ExtensionService,
     private _storageService: StorageService,
   ) {
     this._ctxService.context.subscriptions.push(
-      this._settingsService.onDidChangeSyncProfile(state => this.setSyncState(state), this)
+      this._settingService.onDidChangeSyncProfile(state => this.setSyncState(state), this)
     );
   }
 
   initialize() {
-    this.setSyncState(this._settingsService.syncWorkspaceProfile);
+    this.setSyncState(this._settingService.syncWorkspaceProfile);
   }
 
   setSyncState(sync: boolean) {
@@ -49,15 +49,6 @@ class SyncService implements vscode.Disposable {
     }
   }
 
-  dispose() {
-    this._ctxService.dispose();
-    this._settingsService.dispose();
-    this._profileService.dispose();
-    this._bundleService.dispose();
-    this._extensionService.dispose();
-    this._storageService.dispose();
-  }
-
   public async processDesynced() {
       // checking if bundles need to be overwritten for this workspace due to sync.
       const profile = await this._profileService.getCurrentProfile();
@@ -67,7 +58,7 @@ class SyncService implements vscode.Disposable {
   }
 
   private async checkBundlesDesynced(profile: Profile | undefined): Promise<boolean> {
-    if (!profile || !this._settingsService.syncWorkspaceProfile) {
+    if (!profile || !this._settingService.syncWorkspaceProfile) {
       return false;
     }
 
@@ -77,7 +68,7 @@ class SyncService implements vscode.Disposable {
   }
 
   private async resolveDesyncedBundles(profile: Profile | undefined) {
-    if (!profile || !this._settingsService.syncWorkspaceProfile) {
+    if (!profile || !this._settingService.syncWorkspaceProfile) {
       return;
     }
 
@@ -101,6 +92,23 @@ class SyncService implements vscode.Disposable {
 
   private registerKeysToSync(sync: boolean = false) {
     this._ctxService.context.globalState.setKeysForSync(sync ? this.allSyncKey : this.defaultSyncedKey);
+  }
+
+  destroy() {
+    this.dispose();
+  }
+
+  dispose() {
+    console.log("dispose SyncService");
+    if (this._syncIntervalId) {
+      clearInterval(this._syncIntervalId);
+    }
+    this._ctxService.dispose();
+    this._settingService.dispose();
+    this._profileService.dispose();
+    this._bundleService.dispose();
+    this._extensionService.dispose();
+    this._storageService.dispose();
   }
 }
 

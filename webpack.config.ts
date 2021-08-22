@@ -11,27 +11,12 @@
 import * as path from 'path';
 import * as webpack from 'webpack';
 import CopyPlugin from 'copy-webpack-plugin';
-// import ReplacePlugin from 'webpack-plugin-replace';
-// import { CommandsContribKey, SettingsContribKey } from './src/constants';
+import WebpackBeforeBuildPlugin from 'before-build-webpack';
+import { renderPackageJSON } from './src/package/renderPackageJSON';
 
 function copypluginPathNameFilter(filterList: string[], resourcePath: string) {
   return filterList.some(value => resourcePath.toLowerCase().indexOf(value.toLowerCase()) > -1);
 }
-
-// function replaceTokenAsObject (...objects: any[]): { [key: string]: string; } {
-//   const properties = [];
-
-//   objects.forEach((obj) => {
-//     Reflect.ownKeys(obj).forEach(name => {
-//       const prefix = Reflect.getOwnPropertyDescriptor(obj, "name").value;
-//       if (Reflect.getOwnPropertyDescriptor(obj, name).writable === true) {
-//         properties.push([ `__${prefix}.${name}__`, obj[name] ]);
-//       }
-//     });
-//   });
-
-//   return Object.fromEntries(properties);
-// };
 
 const config: webpack.Configuration = {
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
@@ -94,18 +79,11 @@ const config: webpack.Configuration = {
         }
       ],
     }),
-    // // will allow us to replace package.json's contribution identifiers with our constants, types, variables declared in code.
-    // // goal is to have those identifiers as type/constants, change there and it will automatically be changed in the package.json
-    // // could take care of specific deployment variable in the future.
-    // new ReplacePlugin({
-    //   include: [
-    //     'package.json'
-    //   ],
-    //   values: replaceTokenAsObject(
-    //     CommandsContribKey,
-    //     SettingsContribKey
-    //   )
-    // })
+    new WebpackBeforeBuildPlugin(function(stats, callback) {
+      // Add activation Events and contributions to package.json
+      renderPackageJSON(path.join(__dirname, 'package.json'));
+      callback(); // don't call it if you do want to stop compilation
+    }),
   ]
 };
 
