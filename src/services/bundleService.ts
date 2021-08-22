@@ -7,6 +7,7 @@ import StorageService from "./storageService";
 import ExtensionService from "./extensionService";
 import ProfileService from "./profileService";
 import UIService from "./uiService";
+import SettingService from "./settingService";
 
 @Service()
 class BundleService implements vscode.Disposable {
@@ -15,6 +16,7 @@ class BundleService implements vscode.Disposable {
     private _profileService: ProfileService,
     private _extensionService: ExtensionService,
     private _uiService: UIService,
+    private _settingService: SettingService,
   ) {}
 
   /**
@@ -152,6 +154,7 @@ class BundleService implements vscode.Disposable {
 
     return false;
   }
+
   /**
    * Prompt to choose a bundle, then prompt forto choose which extensions to use for this bundle.
    * @returns the updated {@link Bundle} or undefined if nothing was changed.
@@ -179,21 +182,28 @@ class BundleService implements vscode.Disposable {
     // exit if no bundle was selected.
     if (!selectedBundle) { return; }
 
+    // rename bundle if needed
+    let bundleName: string | undefined = selectedBundle.name;
+    if (this._settingService.renameBundleOnEdit) {
+      bundleName = await this._uiService.renameBundle(bundleName, bundles);
+    }
+    if (!bundleName) { return; }
+
     // choose the extensions to include.
     const availableExtensions = await this._extensionService.getAvailableExtensions();
     const selectedExtensions = await this._uiService.chooseExtensions({
       availableExtensions: availableExtensions,
       enabledExtensions: selectedBundle.extensions,
       placeHolder: "Filter extensions",
-      title: `Select extensions for bundle "${selectedBundle.name}"`
+      title: `Select extensions for bundle "${bundleName}"`
     }) ?? [];
     // handle the case when we specify an extension ignoreList on the workspace level and an active bundle is edited.
     // we take the exising bundle and add the extensions that are not present in this workspace.
     const uniqueExtensions = Utils.uniqueArray<Extension>(...selectedBundle.extensions, ...selectedExtensions);
 
-    await this.saveBundle(selectedBundle.name, uniqueExtensions, bundles);
+    await this.saveBundle(bundleName, uniqueExtensions, bundles);
 
-    if (enabledBundles && enabledBundles.includes(selectedBundle.name)) {
+    if (enabledBundles && enabledBundles.includes(bundleName)) {
       await this.askReloadActiveBundles();
     }
   }

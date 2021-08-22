@@ -146,6 +146,12 @@
           "scope": "application",
           "markdownDescription": "Once bundles are set for a workspace, opening the same workspace on a different synced machine will load the same set of bundles."
         },
+        "mew.bundle.renameOnEdit": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "markdownDescription": "Allow you to rename a bundle on edit."
+        },
         "mew.actionStatusBar": {
           "type": "string",
           "default": "MEW Commands",

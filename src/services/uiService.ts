@@ -105,6 +105,40 @@ class UIService implements vscode.Disposable {
     return bundleName;
   }
 
+    /**
+   *
+   * @param bundles Let you rename a bundle , doesn't allow existing names.
+   * @returns the bundle name or 'undefined' if name is empty
+   */
+  public async renameBundle(oldName: string | undefined, bundles: Bundle[] | undefined ) : Promise<string | undefined> {
+    if (!oldName || !bundles) { return; }
+
+    let newName: string | undefined;
+    let placeHolder = `new name for '${oldName}'`;
+    while (true) {
+      newName = await vscode.window.showInputBox({ placeHolder, title: `Rename bundle '${oldName}'`, value: oldName });
+
+      if (newName && newName !== oldName && bundles.some(i => i.name === newName)) {
+        placeHolder = `The bundle \"${newName}\" already exists, find another name`;
+        continue;
+      } else if (!newName) {
+        return;
+      }
+
+      if (oldName !== newName) {
+        bundles.forEach(b => {
+          if (oldName === b.name) {
+            b.name = newName!;
+          }
+        });
+      }
+
+      break;
+    }
+
+    return newName;
+  }
+
   destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
 
   dispose() {
