@@ -78,7 +78,7 @@ class SyncService implements vscode.Disposable {
     const enabledExtIds = enabledExtensions.map(e=>e.id);
     if (bundleIds.some(id => !enabledExtIds.includes(id))) {
       // if extensions from the bundles aren't enabled, we force our bundles extensions.
-      this._bundleService.applyBundles(bundles, enabledExtensions);
+      this._bundleService.applyBundles(bundles);
       this.askUserToReload();
     }
     // we need to save that we already processed this data
