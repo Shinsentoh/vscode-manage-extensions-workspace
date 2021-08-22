@@ -33,6 +33,13 @@ export function getConfiguration(): vsTypes.IConfiguration {
     markdownDescription: "Once bundles are set for a workspace, opening the same workspace on a different synced machine will load the same set of bundles."
   };
 
+  properties[SettingsContribKey.renameBundle] = {
+    type: "boolean",
+    default: false,
+    scope: "application",
+    markdownDescription: "Allow you to rename a bundle on edit."
+  };
+
   properties[SettingsContribKey.actionStatusBar] = {
     type: "string",
     default: `${appName} Commands`,

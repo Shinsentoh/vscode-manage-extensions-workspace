@@ -36,4 +36,5 @@ export class SettingsContribKey {
   public static readonly autoInstall = "mew.workspace.autoInstall";
   public static readonly autoAdd = "mew.extensions.autoAdd";
   public static readonly autoRemove = "mew.extensions.autoRemove";
+  public static readonly renameBundle = "mew.bundle.renameOnEdit";
 }

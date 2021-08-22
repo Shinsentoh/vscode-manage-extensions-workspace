@@ -82,6 +82,7 @@ class SettingService implements vscode.Disposable {
 
   public get syncWorkspaceProfile():   boolean  { return this._settings[SettingsContribKey.syncWorkspacesProfile] ?? false; }
   public get ignoreRemoteExtensions(): boolean  { return this._settings[SettingsContribKey.ignoredRemote]         ?? false; }
+  public get renameBundleOnEdit():     boolean  { return this._settings[SettingsContribKey.renameBundle]          ?? false; }
   public get autoInstall(): AutoTask            { return this._settings[SettingsContribKey.autoInstall]           ?? AutoTask.prompt; }
   public get autoRemove():  AutoTaskExtensions  { return this._settings[SettingsContribKey.autoRemove]            ?? AutoTaskExtensions.prompt; }
   public get autoLoad():    AutoTask            { return this._settings[SettingsContribKey.autoLoad]              ?? AutoTask.prompt; }
