@@ -192,7 +192,34 @@ class BundleService implements vscode.Disposable {
     const uniqueExtensions = Utils.uniqueArray<Extension>(...selectedBundle.extensions, ...selectedExtensions);
 
     await this.saveBundle(selectedBundle.name, uniqueExtensions, bundles);
+
+    if (enabledBundles && enabledBundles.includes(selectedBundle.name)) {
+      await this.askReloadActiveBundles();
+    }
   }
+
+  private async askReloadActiveBundles() {
+    const reload = "Apply Changes";
+    const self = this;
+    vscode.window
+      .showInformationMessage(`an active bundle was edited, would you like to apply those changes on this workspace ?`, reload)
+      .then(async res => {
+        if (reload === res) {
+          self.reloadActiveBundles();
+        }
+      });
+  }
+
+  private async reloadActiveBundles() {
+    const activeBundlesNames = await this._profileService.getCurrentProfileBundles() ?? [];
+    const bundles = await this.getBundles(b => activeBundlesNames.includes(b.name)) ?? [];
+    if (bundles) {
+      await this.applyBundles(bundles);
+      // Reloading the window to apply extensions
+      vscode.commands.executeCommand("workbench.action.reloadWindow");
+    }
+  }
+
 
   private async saveBundle(bundleName: string, selectedExtensions: Extension[], bundles?: Bundle[]) : Promise<boolean> {
     if (selectedExtensions.length > 0) {
@@ -224,14 +251,11 @@ class BundleService implements vscode.Disposable {
   /**
    * Returns all the existing bundles linked to this VS Code user-data-dir, otpionally filtered by predicate.
    */
-  public async getBundles(predicate?: (value: Bundle, index: number, array: Bundle[]) => boolean): Promise<Bundle[] | undefined> {
+  public async getBundles(
+    predicate?: (value: Bundle, index: number, array: Bundle[]) => boolean
+  ): Promise<Bundle[] | undefined> {
     const bundles = await this._storageService.getState<Bundle[]>(Constant.appBundlesKey);
-    if (predicate) {
-      return bundles?.filter(predicate);
-    }
-    else {
-      return bundles;
-    }
+    return bundles?.filter(predicate ?? (_ => true));
   }
 
     /**
@@ -247,8 +271,8 @@ class BundleService implements vscode.Disposable {
    * @returns true if bundleName exists, false otherwise.
    */
   public async exists(bundleName: string): Promise<boolean> {
-    const bundles = await this.getBundles();
-    return bundles?.some(i => i.name === bundleName) ?? false;
+    const bundles = await this.getBundles(b => bundleName === b.name );
+    return bundles !== undefined;
   }
 
   destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
