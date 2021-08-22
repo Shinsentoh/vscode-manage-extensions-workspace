@@ -17,10 +17,6 @@ class StorageService implements vscode.Disposable {
 
   }
 
-  dispose() {
-    return;
-  }
-
   public async store<T = any>(key: string, state: T, scope = Scope.global): Promise<boolean> {
     try {
       if (Scope.global === scope) {
@@ -176,6 +172,13 @@ class StorageService implements vscode.Disposable {
       actualPath = Utils.getDefaultVSCodeExtensionsPath();
     }
     return actualPath;
+  }
+
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose StorageService");
+    this._ctxService.dispose();
   }
 }
 

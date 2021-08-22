@@ -9,8 +9,12 @@ export type Bundle = {
 };
 
 export type Profile = {
-  name: string,
-  bundles: Bundle[]
+  lastChanges: Date,
+  bundleNames: string[]
+};
+
+export type ProfileList = {
+  [name: string]: Profile
 };
 
 export type ExtensionDetail = {
@@ -74,4 +78,9 @@ export enum AutoTaskExtensions {
   never = "Keep calm & sleep",
   all = "Auto-edit all active",
   choose = "Let you select bundle(s)"
+}
+
+export enum ActionStatusBar {
+  commands = "MEW Commands",
+  select = "Select bundle(s)"
 }

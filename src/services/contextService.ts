@@ -9,15 +9,18 @@ class ContextService implements Disposable {
     Container.remove(Constants.contextContainerKey);
   }
 
-  dispose() {
-    return;
-  }
-
   public extensionDirectoryName(): string {
     const name = this.context.extension.packageJSON.name;
     const version = this.context.extension.packageJSON.version;
     const publisher = this.context.extension.packageJSON.publisher;
     return `${publisher}.${name}-${version}`.toLowerCase();
+  }
+
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose contextService");
+    return;
   }
 }
 

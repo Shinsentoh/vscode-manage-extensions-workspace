@@ -14,12 +14,8 @@ class BundleService implements vscode.Disposable {
     private _storageService: StorageService,
     private _profileService: ProfileService,
     private _extensionService: ExtensionService,
-    private uiService: UIService,
+    private _uiService: UIService,
   ) {}
-
-  dispose() {
-    return;
-  }
 
   /**
    * Select Bundles of extensions to be used for this workspace
@@ -42,7 +38,7 @@ class BundleService implements vscode.Disposable {
 
       // Generate items
       const enabledBundles = await this._profileService.getCurrentProfileBundles() ?? [];
-      const selectedBundles = await this.uiService.chooseBundles({
+      const selectedBundles = await this._uiService.chooseBundles({
         availableBundles: bundles,
         enabledBundles: enabledBundles,
         placeHolder: "The selected bundles will be used for this workspace",
@@ -64,10 +60,16 @@ class BundleService implements vscode.Disposable {
 
       await this.applyBundles(selectedBundles);
 
+      // set the current profile in the statusBar
+      await this._profileService.setCurrentProfile(selectedBundlesNames);
+
+      // Reloading the window to apply extensions
+      vscode.commands.executeCommand("workbench.action.reloadWindow");
+
       return selectedBundles;
   }
 
-  private async applyBundles(enabledBundles: Bundle[], availableExtensions?: Extension[]): Promise<void> {
+  public async applyBundles(enabledBundles: Bundle[], availableExtensions?: Extension[]): Promise<void> {
     if (!availableExtensions) {
       availableExtensions = await this._extensionService.getAvailableExtensions();
     }
@@ -79,13 +81,6 @@ class BundleService implements vscode.Disposable {
 
     this._storageService.enableWorkspaceExtensions(enabledExtensions);
     this._storageService.disableWorkspaceExtensions(disabledExtensions);
-
-    // set the current profile in the statusBar
-    const enabledBundleNames = enabledBundles.map(i => i.name);
-    await this._profileService.setCurrentProfile(enabledBundleNames);
-
-    // Reloading the window to apply extensions
-    vscode.commands.executeCommand("workbench.action.reloadWindow");
   }
 
   /**
@@ -98,13 +93,13 @@ class BundleService implements vscode.Disposable {
     const bundles = await this.getBundles() ?? [];
 
     // choose a bundle name
-    const bundleName = await this.uiService.getBundleName(bundles);
+    const bundleName = await this._uiService.getBundleName(bundles);
     if (!bundleName) { return; }
 
     // choose the extensions to include.
     const enabledExtensions = await this._extensionService.getEnabledExtensions();
     const availableExtensions = await this._extensionService.getAvailableExtensions();
-    const selectedExtensions = await this.uiService.chooseExtensions({
+    const selectedExtensions = await this._uiService.chooseExtensions({
       availableExtensions: availableExtensions,
       enabledExtensions: enabledExtensions,
       placeHolder: "Filter extensions",
@@ -129,7 +124,7 @@ class BundleService implements vscode.Disposable {
     }
 
     // Generate items
-    let selectedBundle = await this.uiService.chooseBundles({
+    let selectedBundle = await this._uiService.chooseBundles({
       availableBundles: bundles,
       enabledBundles: [],
       placeHolder: "Search bundles",
@@ -173,7 +168,7 @@ class BundleService implements vscode.Disposable {
 
     // Generate items
     const enabledBundles = await this._profileService.getCurrentProfileBundles() ?? [];
-    let [selectedBundle] = await this.uiService.chooseBundles({
+    let [selectedBundle] = await this._uiService.chooseBundles({
       availableBundles: bundles,
       enabledBundles: enabledBundles,
       placeHolder: "Filter bundles",
@@ -186,7 +181,7 @@ class BundleService implements vscode.Disposable {
 
     // choose the extensions to include.
     const availableExtensions = await this._extensionService.getAvailableExtensions();
-    const selectedExtensions = await this.uiService.chooseExtensions({
+    const selectedExtensions = await this._uiService.chooseExtensions({
       availableExtensions: availableExtensions,
       enabledExtensions: selectedBundle.extensions,
       placeHolder: "Filter extensions",
@@ -223,14 +218,27 @@ class BundleService implements vscode.Disposable {
 
   private async saveBundles(bundles?: Bundle[]) : Promise<boolean> {
     // save bundles
-    return this._storageService.store(Constant.appBundlesKey, bundles, Scope.global);
+    return this._storageService.store(Constant.appBundlesKey, bundles);
   }
 
   /**
-   * Returns all the existing bundles linked to this VS Code user-data-dir.
+   * Returns all the existing bundles linked to this VS Code user-data-dir, otpionally filtered by predicate.
    */
-  private async getBundles(): Promise<Bundle[] | undefined> {
-    return this._storageService.getState<Bundle[]>(Constant.appBundlesKey, Scope.global);
+  public async getBundles(predicate?: (value: Bundle, index: number, array: Bundle[]) => boolean): Promise<Bundle[] | undefined> {
+    const bundles = await this._storageService.getState<Bundle[]>(Constant.appBundlesKey);
+    if (predicate) {
+      return bundles?.filter(predicate);
+    }
+    else {
+      return bundles;
+    }
+  }
+
+    /**
+   * Returns all the existing bundles Ids linked to this VS Code user-data-dir, otpionally filtered by predicate.
+   */
+  public getBundlesIds(bundles: Bundle[]): string[] {
+    return Utils.uniqueArray(...bundles.flatMap(b => b.extensions.map(e => e.id)));
   }
 
   /**
@@ -243,8 +251,14 @@ class BundleService implements vscode.Disposable {
     return bundles?.some(i => i.name === bundleName) ?? false;
   }
 
-  public truc ({name}: Bundle) {
-    console.log(name);
+  destroy = () => this.dispose(); // typeDI compatibility instead of dispose()
+
+  dispose() {
+    console.log("dispose bundleService");
+    this._profileService.dispose();
+    this._extensionService.dispose();
+    this._storageService.dispose();
+    this._uiService.dispose();
   }
 }
 
