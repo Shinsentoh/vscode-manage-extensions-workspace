@@ -11,7 +11,7 @@ export function renderPackageJSON(path: string) {
     let extensionManifest = loadJSON<vsTypes.IExtensionManifest>(path);
     extensionManifest.contributes = getContributes();
     extensionManifest.activationEvents = getActivationEvents();
-    const packageJson = JSON.stringify(extensionManifest, null, 2); //convert it back to json
+    const packageJson = JSON.stringify(extensionManifest, null, 2) + '\n'; //convert it back to json
     fs.writeFile(path, packageJson, { encoding: 'utf8' }, _ => {}); // write it back
   }
   catch (err) {
