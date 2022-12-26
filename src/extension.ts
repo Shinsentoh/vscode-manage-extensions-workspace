@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	console.log('vscode-manage-extensions-workspaces is desactivated.');
+  console.log('vscode-manage-extensions-workspaces is desactivated.');
   Container.reset();
 }
 
@@ -40,8 +40,12 @@ function registerCommands(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(CommandsContribKey.selectProfile, async () => { bundleService.selectBundles(); }),
     vscode.commands.registerCommand(CommandsContribKey.editBundle, async () => { bundleService.editBundle(); }),
     vscode.commands.registerCommand(CommandsContribKey.deleteBundle, async () => { bundleService.deleteBundle(); }),
-    // vscode.commands.registerCommand(CommandType.disableExtension, DisableExtension),
-    // vscode.commands.registerCommand(CommandType.enableExtension, EnableExtension)
+    vscode.commands.registerCommand(CommandsContribKey.disableExtension, async (extensionId: string) => {
+      return bundleService.editBatchBundles('disable', { extensionId });
+    }),
+    vscode.commands.registerCommand(CommandsContribKey.enableExtension, async (extensionId: string) => {
+      return bundleService.editBatchBundles('enable', { extensionId });
+    }),
   );
 }
 

@@ -1,4 +1,4 @@
-﻿import * as vscode from "vscode";
+import * as vscode from "vscode";
 import { Service } from "typedi";
 import { Bundle, Extension, Scope } from "../types";
 import * as Constant from "../constants";
@@ -207,6 +207,73 @@ class BundleService implements vscode.Disposable {
       await this.askReloadActiveBundles();
     }
   }
+
+  /**
+   * Prompt to choose bundles to update
+   * @returns the updated {@link Bundle} or undefined if nothing was changed.
+   */
+  public async editBatchBundles(
+    action: 'enable' | 'disable',
+    {
+      extensionId
+    }: {
+      extensionId: string
+    }): Promise<Bundle | undefined> {
+    this._extensionService.preLoadExtensionsCache();
+
+    const availableExtensions = await this._extensionService.getAvailableExtensions();
+    const extension = availableExtensions.find(e => e.id === extensionId);
+    if (!extension) {
+      // TODO: handle error?
+      return;
+    }
+
+    // choose bundles (not) using the given extensionId
+    const predicate = (bundle: Bundle) => {
+      return (
+        (action === 'disable' && bundle.extensions.some(e => e.id === extensionId))
+        || (action === 'enable' && !bundle.extensions.some(e => e.id === extensionId))
+      )
+    };
+
+    // Get and check bundles
+    const bundles = await this.getBundles(predicate) ?? [];
+    if (bundles.length === 0) {
+      // no bundles with given extension, silently ignore.
+      return;
+    }
+
+    // Generate items
+    const enabledBundles = await this._profileService.getCurrentProfileBundles() ?? [];
+    let selectedBundles = await this._uiService.chooseBundles({
+      availableBundles: bundles,
+      enabledBundles: enabledBundles,
+      placeHolder: "Filter bundles",
+      title: `Select bundle(s) to ${action} ${extension.label} in`,
+      canPickMany: true
+    }) ?? [];
+
+    // exit if no bundle was selected.
+    if (!selectedBundles) { return; }
+
+    await Promise.all(
+      selectedBundles.map(
+        async (bundle) => {
+          const updatedExtensions =
+            action === 'disable' ?
+              bundle.extensions.filter(e => e.id !== extensionId)
+              : [...bundle.extensions, extension];
+          const uniqueExtensions = Utils.uniqueArray<Extension>(...updatedExtensions);
+          this.saveBundle(bundle.name, uniqueExtensions, bundles);
+        }
+      )
+    );
+
+    if (enabledBundles && enabledBundles.some(enabledBundle => selectedBundles.some(b => b.name === enabledBundle))) {
+      await this.askReloadActiveBundles();
+    }
+  }
+
 
   private async askReloadActiveBundles() {
     const reload = "Apply Changes";
